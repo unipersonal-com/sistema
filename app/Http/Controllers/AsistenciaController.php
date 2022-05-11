@@ -44,7 +44,7 @@ class AsistenciaController extends Controller
         $estado_a = "prueba";
         $turno_a="mañana";
         
-        if ($hora_c >=7 && $hora_c<20) {
+        if ($hora_c >=7 && $hora_c<=20) {
           $error_schedule=true;
         }
         else{
@@ -118,7 +118,7 @@ class AsistenciaController extends Controller
                 return response()->json($message="registro de asistencia de entrada por la tarde ya cerradas");
               }
 
-            }elseif($hora_c>=18&&$minuto>=30&&$hora_c<20){
+            }elseif($hora_c>=18&&$minuto>=30&&$hora_c<=20){
                 $tipo_a = "salida";
                 $message="agregado asistencia salida en la tarde";
                 $estado_a="salida";
@@ -137,9 +137,9 @@ class AsistenciaController extends Controller
                 }*/
 
               }
-              else {
+              /*else {
                 return response()->json($message="horas de registro por la tarde cerradas");
-              }
+              }*/
           }
         }
         else{
