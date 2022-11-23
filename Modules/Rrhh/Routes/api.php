@@ -17,9 +17,14 @@ use Illuminate\Http\Request;
     Route::get('query','RestController@preguntas');
     Route::get('my_key/{id}','RestController@keyuser');
     //apis para asistencia
-  });
-    //Route::get('asistenciasii', 'AsistenciasController@index');
+    /////////////apis del sistema de control de asitencia////////////////////////////////////////////////
     Route::get('/asistencia', 'AsistenciasController@index');
     Route::post('/asistencia', 'AsistenciasController@store');
     Route::get('hour', 'HorariosController@getHorario');
+    Route::get('/personal', 'AsistenciasController@personalget');
+  });
+    //Route::get('asistenciasii', 'AsistenciasController@index');
+    // Route::get('/asistencia', 'AsistenciasController@index');
+    // Route::post('/asistencia', 'AsistenciasController@store');
+    // Route::get('hour', 'HorariosController@getHorario'); 
 

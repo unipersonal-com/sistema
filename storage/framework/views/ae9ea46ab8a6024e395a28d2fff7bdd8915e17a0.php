@@ -34,21 +34,21 @@
                     </tr>
                     <tr>
                         <td><?php echo Form::label('late_minutes','Toler Ent(mins)'); ?></td>
-                        <td><?php echo Form::number('late_minutes',0,['class'=>'form-control',"id"=>"late_minutes_edit"]); ?></td>
+                        <td><?php echo Form::number('late_minutes',0,['class'=>'form-control',"id"=>"late_minutes_edit", "min"=>'5', "max"=>'30']); ?></td>
                         <td><?php echo Form::label('early_minutes','Toler Sal(mins)'); ?></td>
-                        <td><?php echo Form::number('early_minutes',0,['class'=>'form-control',"id"=>"early_minutes_edit"]); ?></td>
+                        <td><?php echo Form::number('early_minutes',0,['class'=>'form-control',"id"=>"early_minutes_edit",'min'=>'5', "max"=>'360']); ?></td>
                     </tr>
                     <tr>
                         <td><?php echo Form::label('start_input','Inicio Ent:'); ?></td>
-                        <td><?php echo Form::time('start_input',null,['class'=>'form-control',"id"=>"start_input_edit"]); ?></td>
+                        <td><?php echo Form::time('start_input',null,['min'=>01, 'max'=>22, 'class'=>'form-control',"id"=>"start_input_edit"]); ?></td>
                         <td><?php echo Form::label('end_input','Fin Ent:'); ?></td>
                         <td><?php echo Form::time('end_input',null,['class'=>'form-control',"id"=>"end_input_edit"]); ?></td>
                     </tr>
                     <tr>
                         <td><?php echo Form::label('start_output','Inicio Sal:'); ?></td>
-                        <td><?php echo Form::time('start_output',null,['class'=>'form-control',"id"=>"start_output_edit"]); ?></td>
+                        <td><?php echo Form::time('start_output',null,['class'=>'form-control',"id"=>"start_output_edit", 'onclick'=>'cambio2()', 'min'=>"12:00", 'max'=>"22:00"]); ?></td>
                         <td><?php echo Form::label('end_output','Fin Sal:'); ?></td>
-                        <td><?php echo Form::time('end_output',null,['class'=>'form-control',"id"=>"end_output_edit"]); ?></td>
+                        <td><?php echo Form::time('end_output',null,['class'=>'form-control',"id"=>"end_output_edit", 'onclick'=>'cambio3()']); ?></td>
                     </tr>
                     <tr>
                         <td><?php echo Form::label('work_day','Cuenta dia Trabajo:'); ?></td>
@@ -92,4 +92,21 @@
         </div>
     </div>
 </div>
+    <script type="text/javascript">
+        function cambio2(){
+            console.log($("#start_input_edit").val());
+            var date2 = moment($("#start_input_edit").val(), 'HH:mm').add(1, 'hours').format('HH:mm');
+
+            $("#start_output_edit").attr("min", date2);
+            
+        }
+
+        function cambio3(){
+            var date3 = moment($("#start_output_edit").val(), 'HH:mm').add(1, 'hours').format('HH:mm');
+
+            $("#end_output_edit").attr("min", date3);
+            $("#end_time_edit").attr("min", date3);
+        }
+        
+    </script>
 <?php /**PATH C:\xampp\htdocs\Web\Modules/Rrhh\Resources/views/scarrhh/schedule/modals/modal-edit.blade.php ENDPATH**/ ?>

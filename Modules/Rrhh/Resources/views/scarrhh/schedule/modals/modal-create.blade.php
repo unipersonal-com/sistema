@@ -9,6 +9,7 @@
             </div>
             <div class="modal-body" style="background: #CBDEED">
                 <h4>Nuevo</h4>
+              
                 {!! Form::open(['route'=>'admin.save.horario', 'role' => 'form', 'method' => 'post']) !!}
                 <table class="table table-responsive">
                     @include('rrhh::scarrhh.schedule.form')

@@ -31,4 +31,14 @@ class Personal extends Model
   {
     return $this->hasMany(PersonalPlanta::class);
   }
+
+  public function horarios(){ 
+    return $this->belongsToMany(Horario::class, 'rrhh.horario_persona')
+      ->withTimestamps();
+  }
+
+  public function grupotrabajos(){ 
+    return $this->belongsToMany(GrupoTrabajo::class, 'rrhh.grupo_persona')
+      ->withTimestamps();
+  }
 }

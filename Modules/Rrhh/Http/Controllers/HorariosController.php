@@ -19,40 +19,23 @@ class HorariosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index( Request $request)
     {
 
-        $hours=Horario::all();
+        $hours=Horario::paginate(10);
         //dd($hours);
         $title="Horarios";
-        return view('rrhh::scarrhh.schedule.index',compact('hours','title'));
+        if ($request->ajax()){
+            return [
+                'list_hours' => view('rrhh::scarrhh.schedule.indexrender',compact('hours'))->render(),
+                'next_page' => $hours->nextPageUrl()
+            ];
+        }
+        else {
+            return view('rrhh::scarrhh.schedule.index',compact('hours','title'));
+        }
     }
 
-    public function meses()
-    {
-        $fecha = Carbon::now()->format('Y-m-d');
-        $now = Carbon::now()->format('day');
-        $date = Carbon::parse($fecha)
-            ->addSeconds(16)
-            ->format('Y-m-d H:i:s');
-        //dd($fecha, $date, $now);
-        $meses = [
-            ["nombre"=>"Enero"],
-            ["nombre"=>"Febrero"],
-            ["nombre"=>"Marzo"],
-            ["nombre"=>"Abril"],
-            ["nombre"=>"Mayo"],
-            ["nombre"=>"Junio"],
-            ["nombre"=>"Julio"],
-            ["nombre"=>"Agosto"],
-            ["nombre"=>"Septiembre"],
-            ["nombre"=>"Octubre"],
-            ["nombre"=>"Noviembre"],
-            ["nombre"=>"Diciembre"]
-        ];
-        $title="Meses";
-        return view('rrhh::scarrhh.vistasHojaCalculo.meses', compact('title', 'fecha', 'meses'));
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -61,7 +44,8 @@ class HorariosController extends Controller
      */
     public function create()
     {
-        //
+        // $areas = Horario::lists('name','id')->toArray();
+        // return view('rrhh::scarrhh.vistasHojaCalculo.form')->with('areas',$areas); 
     }
 
     /**
@@ -77,10 +61,10 @@ class HorariosController extends Controller
         $bool= Validator::make($request->all(),[
             "start_time" => "required",
             "end_time" => "required",
-            "late_minutes" => "required|numeric|min:0|max:60",
-            "early_minutes" => "required|numeric|min:0|max:420",
-            "start_input" => "required",
-            "end_input" => "required",
+            "late_minutes" => "required|numeric|min:5|max:60",
+            "early_minutes" => "required|numeric|min:5|max:420",
+            "start_input" => "required|min:1|max:23",
+            "end_input" => "required|min:start_input+4|max:22",
             "start_output" => "required",
             "end_output" => "required",
             "work_day" => "required|numeric|min:0.1|max:30",

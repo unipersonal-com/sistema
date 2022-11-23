@@ -32,7 +32,6 @@ class EventoAsisteciaController extends Controller
 
     public function meses(Request $request)
     {
-        //dd($request->all());
         $hoursi=Horario::all();
 
         $tiposalidas = TipoSalida ::all();
@@ -57,7 +56,6 @@ class EventoAsisteciaController extends Controller
         $perTP = 0;
 
         $actuals = EventoAsistecia::where('id_persona', '=', $id_persona)->orderBy('start', 'asc')->get();
-        //dd(count($actuals), $actuals);
         $total_permisos = Count($actuals);
         if ($total_permisos > 0) {
 
@@ -66,11 +64,11 @@ class EventoAsisteciaController extends Controller
 
                     $permisos ++;
                     $difhora = Carbon::create($permiso->inicio_time)->diffInHours(Carbon::create($permiso->fin_evento));
-                    $intervaloMm= DATE::CreateFromFormat('H:i:s', $permiso->inicio_time)->diffInMinutes(DATE::createFromFormat('H:i:s', $permiso->fin_evento));  
-                    $intervaloM=gmdate('H:i', $intervaloMm * 60);  
+                    $intervaloMm= DATE::CreateFromFormat('H:i:s', $permiso->inicio_time)->diffInMinutes(DATE::createFromFormat('H:i:s', $permiso->fin_evento));
+                    $intervaloM=gmdate('H:i', $intervaloMm * 60);
                     $dia = DATE::create($permiso->start)->format('w');
-                    
-                    if ($difhora == 4 && $dia != 6  && $dia != 0) {              
+
+                    if ($difhora == 4 && $dia != 6  && $dia != 0) {
                         $perMT ++;
                         $perMTT = $perMTT + floatval($intervaloM);
                     }
@@ -78,7 +76,7 @@ class EventoAsisteciaController extends Controller
                         $perTC ++;
                         $perTCT = $perTCT + floatval($intervaloM);
                     }
-                    elseif ($difhora < 4 && $dia != 6  && $dia != 0) {   
+                    elseif ($difhora < 4 && $dia != 6  && $dia != 0) {
                         $perH ++;
                         $perHT = $perHT + floatval($intervaloM);
                     }
@@ -88,12 +86,11 @@ class EventoAsisteciaController extends Controller
                     }
                 }
             }
-            $perTP=$perMTT + $perHT + $perFST + $perTCT;       
+            $perTP=$perMTT + $perHT + $perFST + $perTCT;
         }
-
         $title="PERMISOS Y SALIDAS DE: ";
         if ($request->ajax()) {
-            return response()->json(view('rrhh::scarrhh.vistasHojaCalculo.meses', 
+            return response()->json(view('rrhh::scarrhh.vistasHojaCalculo.meses',
                 compact('title', 'fecha', 'hoursi', 'id_persona', 'tiposalidas', 'persona', 'perH', 'perMT', 'perTC', 'perHT', 'perFS', 'perFST', 'perMTT', 'perTCT', 'permisos', 'perTP'))->render());
         }
     }
@@ -105,8 +102,6 @@ class EventoAsisteciaController extends Controller
         $id_persona =$request->id_persona;
         $fecha11= Carbon::create($fecha2)->addDay(1)->format('Y-m-d');
 
-
-        //dd($id_persona, $fecha1, $fecha2);
         $permisos = 0;
         $perMT = 0;
         $perTC = 0;
@@ -128,11 +123,11 @@ class EventoAsisteciaController extends Controller
             foreach ($actuals as $permiso){
 
                 $difhora = Carbon::create($permiso->inicio_time)->diffInHours(Carbon::create($permiso->fin_evento));
-                $intervaloMm= DATE::CreateFromFormat('H:i:s', $permiso->inicio_time)->diffInMinutes(DATE::createFromFormat('H:i:s', $permiso->fin_evento));  
-                $intervaloM=gmdate('H:i', $intervaloMm * 60);  
+                $intervaloMm= DATE::CreateFromFormat('H:i:s', $permiso->inicio_time)->diffInMinutes(DATE::createFromFormat('H:i:s', $permiso->fin_evento));
+                $intervaloM=gmdate('H:i', $intervaloMm * 60);
                 $dia = DATE::create($permiso->start)->format('w');
-                
-                if ($difhora == 4 && $dia != 6  && $dia != 0) {              
+
+                if ($difhora == 4 && $dia != 6  && $dia != 0) {
                     $perMT ++;
                     $perMTT = $perMTT + floatval($intervaloM);
                 }
@@ -140,7 +135,7 @@ class EventoAsisteciaController extends Controller
                     $perTC ++;
                     $perTCT = $perTCT + floatval($intervaloM);
                 }
-                elseif ($difhora < 4 && $dia != 6  && $dia != 0) {   
+                elseif ($difhora < 4 && $dia != 6  && $dia != 0) {
                     $perH ++;
                     $perHT = $perHT + floatval($intervaloM);
                 }
@@ -148,9 +143,9 @@ class EventoAsisteciaController extends Controller
                     $perFS ++;
                     $perFST = floatVal($perFST) + floatval($intervaloM);
                 }
-            } 
+            }
             $perTP=$perMTT + $perHT + $perFST + $perTCT;
-    
+
             return response()->json([
                 "resp"=>200,
                 "permisos"=>view("rrhh::scarrhh.vistasHojaCalculo.vista-renderper", compact('id_persona', 'perH', 'perMT', 'perTC', 'perFS', 'perFST', 'perHT', 'perMTT', 'perTCT', 'permisos', 'perTP'))->render()
@@ -163,7 +158,6 @@ class EventoAsisteciaController extends Controller
         }
     }
 
-    /////<link href="{{ public_path('css/app.css') }}" rel="stylesheet" type="text/css">
     public function store(Request $request)
     {
         $title = $request->title;
@@ -191,52 +185,24 @@ class EventoAsisteciaController extends Controller
             $eventosalida->id_horario = $id_horario;
             $eventosalida->id_persona = $id_persona;
             $eventosalida->color = $color;
-            
+
             $eventosalida->save();
-    
+
             return response()->json(["resp"=>200]);
         }
 
-        //return response()->json(["resp"=>250]); 
+        //return response()->json(["resp"=>250]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     
-     *
-     * @param  \App\EventoAsistecia  $eventoAsistecia
-     * @return \Illuminate\Http\Response
-     */
     public function show(EventoAsistecia $eventoAsistecia, Request $request)
     {
         $id=$request->id;
-        
+
         $events=EventoAsistecia::where('id_persona', '=', $id)->get();
         //$events=EventoAsistecia::All();
         return response()->json($events);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\EventoAsistecia  $eventoAsistecia
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(EventoAsistecia $eventoAsistecia)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\EventoAsistecia  $eventoAsistecia
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request)
     {
         $id_permiso = $request->id_p;
@@ -248,9 +214,9 @@ class EventoAsisteciaController extends Controller
         $id_horario = $request->id_horario;
         $id_tiposalida = $request->id_tiposalida;
 
-        
+
         $permiso = EventoAsistecia::find($id_permiso);
-        
+
         $permiso->inicio_time = $inicio_time;
         $permiso->fin_evento = $fin_evento;
         $permiso->start = $fecha1;
@@ -262,7 +228,7 @@ class EventoAsisteciaController extends Controller
         $permiso->save();
 
         return response()->json(["resp"=>200, "permiso"=>$permiso->title]);
-    
+
     }
 
     public function getEnvento(Request $request){
@@ -282,23 +248,13 @@ class EventoAsisteciaController extends Controller
             "id_persona" => $evento->id_persona,
             "color" => $evento->color
         ];
-    
+
         //return $json;
         return response()->json($json);
         //return response()->json(view('rrhh::scarrhh.vistasHojaCalculo.meses', compact('title', 'fecha', 'meses', 'hoursi','id_persona'))->render());
 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\EventoAsistecia  $eventoAsistecia
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(EventoAsistecia $eventoAsistecia)
-    {
-        //
-    }
     public function deleteEvento(Request $request){
         $id=$request->id;
         $evento=EventoAsistecia::find($id);

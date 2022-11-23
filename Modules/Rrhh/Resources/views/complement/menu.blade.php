@@ -1,7 +1,7 @@
 <div class="menu_section">
   <div class="con_ImCos" style= "color= red">
     <link rel="shortcut icon" href="{{{ asset('assets/images/logo.png') }}}" type="image/x-icon" />
-    <img src="{{{ asset('assets/images/uatfblanco.png') }}}" alt="Logo-UATF">
+    <!-- <img src="{{{ asset('assets/images/uatfblanco.png') }}}" alt="Logo-UATF"> -->
     <h3 class="titleUnidPrin">Recursos Humanos</h3>
   </div>
   <hr>
@@ -26,7 +26,42 @@
         @endpermission
         @permission('administracion.personalrrhh')
         <li class="InTolinkSub">
-          <a href="{{route('admin.horarios.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-book"></i> Horarios</a>
+          <a href="{{route('admin.horarios.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-hourglass"></i> Horarios</a>
+        </li>
+        @endpermission
+        <!-- @permission('administracion.personalrrhh')
+        <li class="InTolinkSub">
+          <a href="{{route('admin.biometricos.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-mobile"></i> Biometrico</a>
+        </li>
+        @endpermission -->
+        @permission('administracion.personalrrhh')
+        <li class="InTolinkSub">
+          <a href="{{route('admin.biometricos.lis')}}" class="J_JxNavLinkStyXs"><i class="fa fa-fax"></i> Biometricos</a>
+        </li>
+        @endpermission
+        @permission('administracion.personalrrhh')
+        <li class="InTolinkSub">
+          <a href="{{route('admin.grupotrabajo.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-tasks"></i> Grupos</a>
+        </li>
+        @endpermission
+        @permission('administracion.personalrrhh')
+        <li class="InTolinkSub">
+          <a href="{{route('admin.designaciongrupotrabajo.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-slideshare"></i> Designar Grupos</a>
+        </li>
+        @endpermission
+        @permission('administracion.personalrrhh')
+        <li class="InTolinkSub">
+          <a href="{{route('admin.asistenciaspositivos.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-book"></i> Asistencias Equipos</a>
+        </li>
+        @endpermission
+        @permission('administracion.personalrrhh')
+        <li class="InTolinkSub">
+          <a href="{{route('admin.tiposalida.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-outdent"></i> Tipo Salidas</a>
+        </li>
+        @endpermission
+        @permission('administracion.personalrrhh')
+        <li class="InTolinkSub">
+          <a href="{{route('admin.tipocontrato.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-clipboard"></i> Tipo Contratos</a>
         </li>
         @endpermission
       </ul>

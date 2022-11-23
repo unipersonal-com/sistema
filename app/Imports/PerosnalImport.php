@@ -10,6 +10,8 @@ class PerosnalImport implements ToCollection
     /**
     * @param Collection $collection
     */
+    use Importable;
+
     public function collection(Collection $rows)
     {
       //dd($rows);

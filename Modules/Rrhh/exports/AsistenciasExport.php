@@ -34,15 +34,6 @@ use Jenssegers\Date\Date as DATE;
 
 class AsistenciasExport implements FromView, ShouldAutoSize, WithHeadings, WithStyles, WithDrawings, WithTitle
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    // public function collection()
-    // {
-    //     //return AssiteciaActual::all();
-    //     return AsistenciaBiometrico::all();
-    // }
-
     private $fecha1;
     private $fecha2;
     private $nombre_tc;
@@ -54,8 +45,7 @@ class AsistenciasExport implements FromView, ShouldAutoSize, WithHeadings, WithS
     private $cadena;
     private $mes;
     private $año;
-
-    public function __construct($fecha1, $fecha2, $per_tc, $nombre_tc, $grupohorario, $cadena, $grupohorarioentradas, $grupohorariosalidas, $cantidad, $mes, $año) 
+    public function __construct($fecha1, $fecha2, $per_tc, $nombre_tc, $grupohorario, $cadena, $grupohorarioentradas, $grupohorariosalidas, $cantidad, $mes, $año)
     {
         $this->fecha1 = $fecha1; // asignas el valor inyectado a la propiedad
         $this->fecha2 = $fecha2;
@@ -123,15 +113,6 @@ class AsistenciasExport implements FromView, ShouldAutoSize, WithHeadings, WithS
             3    => ['font' => ['bold' => true, 'size' => 10]],
             4    => ['font' => ['bold' => true, 'size' => 10]],
             6   => ['font' => ['bold' => true, 'size' => 11]],
-
-            //for($i=1; $i <= Count($this->per_tc) ; $i++) {6+$i   => ['font' => ['size' => 11], 'alignment' => ['horizontal' => 'center']],},
-            
-
-            // // Styling a specific cell by coordinate.
-            // 'B2' => ['font' => ['italic' => true]],
-
-            // // Styling an entire column.
-            // 'C'  => ['font' => ['size' => 16]],
            5 + Count($this->per_tc) +3 => ['font' => ['bold' => true, 'size' =>11]],
         ];
     }
@@ -140,16 +121,6 @@ class AsistenciasExport implements FromView, ShouldAutoSize, WithHeadings, WithS
     {
         $sheet->getStyle('B2')->getFont()->setBold(true);
     }
-
-    // public function batchSize(): int
-        // {
-        //     return 4000;
-        // }
-
-        // public function chunkSize(): int
-        // {
-        //     return 4000;
-    // }
 
     public function view(): View
     {
@@ -166,7 +137,7 @@ class AsistenciasExport implements FromView, ShouldAutoSize, WithHeadings, WithS
         $mes = $this->mes;
         $año = $this->año;
         //dd($mes, $año, $nombre_tc, $per_tc);
-        return view('rrhh::scarrhh.reportes.xlss.vistas.reporte-asistencias', 
+        return view('rrhh::scarrhh.reportes.xlss.vistas.reporte-asistencias',
                 compact(['fecha1', 'fecha2', 'grupohorarioentradas', 'grupohorariosalidas', 'per_tc', 'grupohorario', 'cadena', 'cantidad', 'nombre_tc', 'mes', 'año'])
             );
     }

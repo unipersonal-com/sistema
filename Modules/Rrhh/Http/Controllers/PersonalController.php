@@ -6,6 +6,10 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Rrhh\Entities\Personal;
+use Modules\Rrhh\Entities\TipoContrato;
+use Modules\Rrhh\Entities\GrupoPersona;
+use Modules\Rrhh\Entities\GrupoTrabajo;
+use Modules\Rrhh\Entities\Horario;
 use App\Unidad;
 use Jenssegers\Date\Date;
 use App\Pedido;
@@ -28,11 +32,14 @@ class PersonalController extends Controller
    */
   public function index(Request $request)
   {
+    // $idPerso = Personal::where('ci', '=', "10545775")->get();
+    // dd($idPerso);
   //   $title = 'contenido del personal';
   //   $personalss = Personal::orderby('id', 'ASC')->get();
   //   $depart = ["la paz" => "LP", "oruro" => "OR", "chuquisaca" => "CH", "cochabamba" => "CB", "tarija" => "TR", "santa cruz" => "SC", "beni" => "BN", "Pando" => "PD", "Potosi" => "PT"];
   //  // return view('rrhh::administrador.personal.index', compact('title', 'personal', 'depart'));
   //   return view('rrhh::administrator.personal.index2',compact('title', 'personalss', 'depart'));
+    $tipocontrato= TipoContrato::all();
 
     $title='administracion de personal';
     $personals = Personal::orderby('id', 'DESC')->paginate(10);
@@ -44,8 +51,112 @@ class PersonalController extends Controller
         'next_page' => $personals->nextPageUrl()
       ];
     }else{
-      return view('rrhh::administrator.personal.index2',compact('title','personals', 'depart'));
+      return view('rrhh::administrator.personal.index2',compact('title','personals', 'depart', 'tipocontrato'));
     }
+  }
+
+  public function searchingpersonal(Request $request)
+  {
+    $search = $request->_thisVar;
+    $opcion = $request->_SelOptTy;
+      $hours=Horario::all();
+      $grupos=GrupoTrabajo::all();
+      $grupopersona = GrupoPersona::all();
+      $tipocontrato = TipoContrato::all();
+      $title='administracion de personal';
+
+    switch ($opcion) {
+      case 'N_mesFul':
+        $personals = Personal::where('nombres', 'LIKE','%' . strtoupper($search) . '%')->orWhere('nombres', 'LIKE','%' . $search . '%')
+        ->latest()
+        ->paginate(10);
+        break;
+      case 'A_patNo':
+        $personals = Personal::where('apellido_paterno', 'LIKE','%' . strtoupper($search) . '%')->orwhere('apellido_paterno', 'LIKE','%' . $search . '%')
+        ->latest()
+        ->paginate(10);
+        break;
+      case 'A_matNo':
+        $personals = Personal::where('apellido_materno', 'LIKE','%' . strtoupper($search) . '%')->orwhere('apellido_materno', 'LIKE','%' . $search . '%')
+        ->latest()
+        ->paginate(10);
+        break;
+      
+      case 'C_i':
+        $personals = Personal::where('ci', 'LIKE','%' . $search . '%')
+        ->latest()
+        ->paginate(10);
+        break;
+      default:
+        $personals = Personal::where('correo_electronico', 'LIKE','%' . strtoupper($search) . '%')->orwhere('correo_electronico', 'LIKE','%' . $search . '%')
+        ->latest()
+        ->paginate(10);
+    }
+
+    if($search != '' && $opcion != ' '){
+      return [
+        
+        'list_personal' => view('rrhh::administrator.personal.kardex.search')->with(compact('personals', 'grupos', 'hours', 'grupopersona', 'tipocontrato'))->render(),
+        //'next_page' => $personals->nextPageUrl()
+      ];
+    }
+    else{
+      $personals = Personal::orderby('id', 'DESC')->paginate(10);
+      return [
+        'list_personal' => view('rrhh::administrator.personal.kardex.RendTabPerAll')->with(compact('personals', 'grupos', 'hours', 'grupopersona', 'tipocontrato'))->render(),
+        'next_page' => $personals->nextPageUrl()
+      ];
+    }
+
+  }
+  public function darbaja(Request $request)
+  {
+    $valor = $request->valor;
+    $persona = Personal::find($request->id);
+    if ($persona != null){
+
+      $persona->baja = $valor;
+
+      $persona->save();
+    }
+
+    $hours=Horario::all();
+    $grupos=GrupoTrabajo::all();
+    $grupopersona = GrupoPersona::all();
+    $tipocontrato = TipoContrato::all();
+    $personals = Personal::orderby('id', 'DESC')->paginate(10);
+      return [
+        'list_personal' => view('rrhh::administrator.personal.kardex.RendTabPerAll')->with(compact('personals', 'grupos', 'hours', 'grupopersona', 'tipocontrato'))->render(),
+        'next_page' => $personals->nextPageUrl(),
+        "resp"=>200
+      ];
+
+  }
+
+  public function nodarbaja(Request $request)
+  {
+    $valor = $request->valor;
+    $persona = Personal::find($request->id);
+    if ($persona != null){
+
+      $persona->baja = $valor;
+
+      $persona->save();
+    }
+
+    $hours=Horario::all();
+    $grupos=GrupoTrabajo::all();
+    $grupopersona = GrupoPersona::all();
+    $tipocontrato = TipoContrato::all();
+    $title='administracion de personal';
+    $personals = Personal::orderby('id', 'DESC')->paginate(10);
+      return [
+        'list_personal' => view('rrhh::administrator.personal.kardex.RendTabPerAll')->with(compact('personals', 'grupos', 'hours', 'grupopersona', 'tipocontrato'))->render(),
+        'next_page' => $personals->nextPageUrl(),
+        "resp"=>200
+      ];
+
+    
   }
 
   /**
@@ -71,6 +182,8 @@ class PersonalController extends Controller
       'apellidoM.required' => 'el campo es obligado',
       'ci.required' => 'el campo es obligado',
       'extension.required' => 'el campo es obligado',
+      'profecion.required' => 'el campo es obligado',
+      'id_tipo_contrato.required' => 'el campo es obligado',
     ];
     $request->validate([
       'nombres' => 'required',
@@ -78,6 +191,8 @@ class PersonalController extends Controller
       'apellidoM' => 'required',
       'ci' => 'required',
       'extension' => 'required',
+      'profecion' => 'required',
+      'id_tipo_contrato' => 'required',
     ], $messages);
 
     $personal = new Personal();
@@ -86,30 +201,13 @@ class PersonalController extends Controller
     $personal->apellido_materno = $request->apellidoM;
     $personal->ci = $request->ci;
     $personal->extension = $request->extension;
+    $personal->profecion = $request->profecion;
+    $personal->id_tipo_contrato = $request->id_tipo_contrato;
     $personal->save();
-    //$personal = Personal::all();
-    //$personal = new Personal($request->all());
-
-      // $bool= Validator::make($request->all(),[
-      //     "start_time" => "required",
-      //     "end_time" => "required",
-      //     "late_minutes" => "required|numeric|min:0|max:60",
-      //     "early_minutes" => "required|numeric|min:0|max:420",
-      //     "start_input" => "required",
-      //     "end_input" => "required",
-      //     "start_output" => "required",
-      //     "end_output" => "required",
-      //     "work_day" => "required|numeric|min:0.1|max:30",
-      //     "name" => "required",
-      //     "color" => "required",
-      // ]);
-      // if($request->fails()){
-      //     return redirect()->back()->withErrors($request->errors());
-      // }
     
       $notify=[
           "type"=>"success",
-          "message"=>'El Horario '.$personal->nombres.' a sido registrado correctamente'
+          "message"=>'El personal '.$personal->nombres.' a sido registrado correctamente'
       ];
       return redirect()->back()->with("notify",$notify);
   }

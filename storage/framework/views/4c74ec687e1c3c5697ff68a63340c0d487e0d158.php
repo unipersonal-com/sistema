@@ -5,10 +5,10 @@
             <div class="modal-header" style="background: #113F63;color:#fff">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel2"><b>Nuevo Personal</b></h4>
+                <h4 class="modal-title" id="myModalLabel2"><b>Nuevo Persona</b></h4>
             </div>
             <div class="modal-body" style="background: #CBDEED">
-                <h4>Nuevo</h4>
+                <!-- <h4>Nuevo</h4> -->
                 <?php echo Form::open(['route'=>'rrhh.personalstore1', 'role' => 'form', 'method' => 'post']); ?>
 
                 <table class="table table-responsive">

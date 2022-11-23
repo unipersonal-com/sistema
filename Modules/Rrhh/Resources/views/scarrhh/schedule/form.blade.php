@@ -8,9 +8,9 @@
     </tr>
     <tr>
         <td>{!! Form::label('late_minutes','Toler Ent(mins)') !!}</td>
-        <td>{!! Form::number('late_minutes',0,['class'=>'form-control','min'=>'0']) !!}</td>
+        <td>{!! Form::number('late_minutes',5,['class'=>'form-control', "min"=>'5', "max"=>'30']) !!}</td>
         <td>{!! Form::label('early_minutes','Toler Sal(mins)') !!}</td>
-        <td>{!! Form::number('early_minutes',0,['class'=>'form-control','min'=>'0']) !!}</td>
+        <td>{!! Form::number('early_minutes',5,['class'=>'form-control','min'=>'5', "max"=>'360']) !!}</td>
     </tr>
     <tr>
         <td>{!! Form::label('start_input','Inicio Ent:') !!}</td>
@@ -20,14 +20,14 @@
     </tr>
     <tr>
         <td>{!! Form::label('start_output','Inicio Sal:') !!}</td>
-        <td>{!! Form::time('start_output',null,['class'=>'form-control']) !!}</td>
+        <td>{!! Form::time('start_output',null,['class'=>'form-control', 'onclick'=>'cambio()', 'min'=>"12:00", 'max'=>"22:00"]) !!}</td>
         <td>{!! Form::label('end_output','Fin Sal:') !!}</td>
-        <td>{!! Form::time('end_output',null,['class'=>'form-control']) !!}</td>
+        <td>{!! Form::time('end_output',null,['class'=>'form-control', 'onclick'=>'cambio1()']) !!}</td>
     </tr>
     <tr>
         <td>{!! Form::label('work_day','Cuenta dia Trabajo:') !!}</td>
         <td>{!! Form::text('work_day',1,['class'=>'form-control']) !!}</td>
-        <td>{!! Form::label('name','Nombre:') !!}</td>
+        <td>{!! Form::label('name','Nombre:') !!}</td>  
         <td>{!! Form::text('name',null,['class'=>'form-control']) !!}</td>
     </tr>
     <tr>
@@ -56,3 +56,22 @@
         <td><!--{!! Form::label('sum','La tolerancia se suma al atrazo?') !!}--></td>
 
     </tr>
+    <script type="text/javascript">
+        function cambio(){
+            var date = moment($("[name='start_input']").val(), 'HH:mm').add(1, 'hours').format('HH:mm');
+
+            $("[name='start_output']").val(date);
+            $("[name='start_output']").attr("min", date)
+
+        }
+
+        function cambio1(){
+            var date1 = moment($("[name='start_output']").val(), 'HH:mm').add(1, 'hours').format('HH:mm');
+
+            $("[name='end_output']").val(date1);
+            $("[name='end_output']").attr("min", date1)
+            $("[name='end_time']").attr("min", date1)
+        }
+        //var h_e= document.getElementname('start_input').val();
+        
+    </script>

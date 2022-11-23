@@ -65,12 +65,9 @@ class PdfController extends Controller
 
     ///////////////////////desde aqui reportes////////////// de asistencias //////////////////////
     public function pdfpersonalasistencia(Request $request) {
-        // ->setPaper('letter');$date = new Carbon('next monday');
         $date = new DATE('last monday');
-
         $fecha1 = $request->fecha1;
         $fecha2 = $request->fecha2;
-
         $cadena = [];
         $dif = Carbon::create($fecha1)->diffInDays(Carbon::create($fecha2));
         $mes = DATE::create($fecha1)->format('M').' '.DATE::create($fecha2)->format('M');
@@ -83,8 +80,6 @@ class PdfController extends Controller
         if($cargo==null){
             $cargo = "sin designar";
         }
-
-        //dd($id_persona);
         $grupos = GrupoPersona::where('personal_id','=',$id_persona)->first();
         $grupo = "sin designar";
         $grupo = $grupos->nonbre_grupotrabajo;
@@ -94,10 +89,8 @@ class PdfController extends Controller
         $abandonos = 0;
         $permisos = 0;
         $now = Carbon::now();
-        //dd($mes, $año, $nombres, $ci, $cargo, $grupo);
         $asistencias = AssiteciaActual::where('id_persona', '=', $id_persona)->where('start', '>=', $fecha1)->where('end', '<=', $fecha2)->orderBy('start', 'asc')->get();
         $asisentradas = AssiteciaActual::where('id_persona', '=', $id_persona)->where('start', '>=', $fecha1)->where('end', '<=', $fecha2)->orderBy('start', 'asc')->where('tipo_a', '=', "entrada")->get();
-
         $asissalidas = AssiteciaActual::where('id_persona', '=', $id_persona)->where('start', '>=', $fecha1)->where('end', '<=', $fecha2)->orderBy('start', 'asc')->where('tipo_a', '=', "salida")->get();
         foreach ($asistencias as $actual){
             if ($actual->estado_a == "en hora" || $actual->estado_a == "atrasado" || $actual->estado_a == "salida" || $actual->estado_a == 'abandono' || $actual->estado_a == 'permiso'){
@@ -119,52 +112,28 @@ class PdfController extends Controller
                 }
             }
         }
-        //dd($faltas, $valor, $atrasos);
         for ($i=0; $i <= $dif; $i++) {
             $aux = Carbon::create($fecha1)->addDay($i)->format('Y-m-d');
             $cadena [] = Carbon::create($fecha1)->addDay($i)->format('Y-m-d');
         }
-        //dd($cadena, Count($cadena));
-        //dd(Carbon::createFromFormat('Y-m-d', Carbon::create($fecha2)->format('Y-m-d')));
         $asistencia = array();
         foreach ($cadena as $fech){
             $desig = GrupoHorario::where('persona_id', '=', $id_persona)->where('start', '=', $fech)->get();
-            //dd(Count($desig));
             if (Count($desig) == 2){
-                //dd($desig);
                 $asistenci = AssiteciaActual::where('id_persona', '=', $id_persona)->where('start', '=', $fech)->get();
                 if (count($asistenci) == 4){
-                    //$asistencias = AssiteciaActual::where('id_persona', '=', $id_persona)->get();
                     $asistencia = $asistenci;
                 }
                 elseif (count($asistenci) == 3) {
-                    // foreach ($asistenci as $asis) {
-
-                    // }
                     for ($i=0; $i < 3; $i++) {
                         $asistencia[] = $asistenci[$i];
                     }
-                    // $asistencias = $asistenci;
-                    // $asistencias[] = ;
                 }
-
             }
         }
-
-        //dd($asistencias);
-        //view()->share('asistencias', $asistencias, 'mes', $mes, 'año', $año, 'nombres', $nombres, 'ci', $ci, 'cargo', $cargo, 'grupo', $grupo);
         $pdf = PDF::loadView('rrhh::scarrhh.reportes.pdfs.pdfPersonal',
             compact(['asistencias', 'mes', 'año', 'nombres', 'ci', 'cargo', 'grupo', 'fecha1', 'fecha2', 'asisentradas', 'asissalidas', 'valor', 'faltas', 'atrasos','cadena', 'permisos', 'abandonos']))
             ->setPaper('legal');
-
-             //// para descargar
-        // $path = public_path('pdf/');
-        // $fileName = time().'.'. 'pdf' ;
-        // $pdf->save($path . '/' . $fileName);
-        // $pdf = Public_path('pdf/'.$fileName);
-        /////tambien hasta aqui......////
-
-        //return response()->download($pdf);
         return $pdf->stream('asistencia.pdf');
     }
 
@@ -315,19 +284,12 @@ class PdfController extends Controller
 
         $tipocontrato = TipoContrato::find($tc_id);
         $nombre_tc = $tipocontrato->nombre_tipo_contrato;
-        $per_tc = Personal::where('id_tipo_contrato', '=', $tc_id)->orderBy('id', 'asc')->get();
-
-        // $asistencias = AssiteciaActual::where('id_tipo_contrato', '=', $tc_id)->where('start', '>=', $fecha1)->where('end', '<=', $fecha2)->orderBy('start', 'asc')->get();
-        // $asisentradas = AssiteciaActual::where('id_persona', '=', $id_persona)->where('start', '>=', $fecha1)->where('end', '<=', $fecha2)->orderBy('start', 'asc')->where('tipo_a', '=', "entrada")->get();
-
-        // $asissalidas = AssiteciaActual::where('id_persona', '=', $id_persona)->where('start', '>=', $fecha1)->where('end', '<=', $fecha2)->orderBy('start', 'asc')->where('tipo_a', '=', "salida")->get();
-
+        $per_tc = Personal::where('id_tipo_contrato', '=', $tc_id)->orderBy('id', 'asc')->get()
         $grupohorario = DB::table('rrhh.personas')
             ->join('rrhh.asistenciasactual','rrhh.asistenciasactual.id_persona', '=', 'rrhh.personas.id')
             ->where('rrhh.personas.id_tipo_contrato', '=', $tc_id)
             ->where('rrhh.asistenciasactual.start', '>=', $fecha1)->where('rrhh.asistenciasactual.end', '<=', $fecha2)->orderBy('id_persona', 'asc')
             ->get();
-        //dd(Count($per_tc), $per_tc);
 
         $grupohorarioentradas = DB::table('rrhh.personas')
             ->join('rrhh.asistenciasactual','rrhh.asistenciasactual.id_persona', '=', 'rrhh.personas.id')
@@ -440,11 +402,10 @@ class PdfController extends Controller
         $pdf = PDF::loadView('rrhh::scarrhh.reportes.pdfs.pdfTc',
             compact(['mes', 'año', 'nombre_tc', 'fecha1', 'fecha2', 'grupohorarioentradas', 'grupohorariosalidas', 'per_tc', 'grupohorario', 'cadena', 'cantidad']))
             ->setPaper('legal');
-////
+
         // $pdf = PDF::loadView('rrhh::scarrhh.reportes.pdfs.pdfprueba',
         //     compact(['mes', 'año', 'nombre_tc', 'fecha1', 'fecha2', 'per_tc', 'actualAsistencias', 'cantidad', 'grupohorario', 'cadena']))
         //     ->setPaper('legal');
-////
               //// para descargar
         // $path = public_path('pdf/');
         // $fileName = time().'.'. 'pdf' ;
@@ -462,12 +423,9 @@ class PdfController extends Controller
 
     ////////////////////////////////permiossssss pdfs.....//////////////
     public function pdfpersonalapermisos(Request $request) {
-        // ->setPaper('letter');$date = new Carbon('next monday');
         $date = new DATE('last monday');
-
         $fecha1 = $request->fecha1;
         $fecha2 = $request->fecha2;
-
         $cadena = [];
         $dif = Carbon::create($fecha1)->diffInDays(Carbon::create($fecha2));
         $mes = DATE::create($fecha1)->format('M').' '.DATE::create($fecha2)->format('M');
@@ -480,21 +438,16 @@ class PdfController extends Controller
         if($cargo==null){
             $cargo = "sin designar";
         }
-
-        //dd($id_persona);
         $grupos = GrupoPersona::where('personal_id','=',$id_persona)->first();
         $grupo = "sin designar";
         $grupo = $grupos->nonbre_grupotrabajo;
-
         $perMT = 0;
         $perTC = 0;
         $perH = 0;
         $hours = Horario::all();
         $now = Carbon::now();
-
         $tipo_c = TipoContrato::find($persona->id_tipo_contrato);
         $nombre_tc = $tipo_c->nombre_tipo_contrato;
-
         $permisos= EventoAsistecia::where('id_persona', '=', $id_persona)->where('start', '>=', $fecha1)->where('end', '<=', $fecha2)->orderBy('start', 'asc')->get();
         if (Count($permisos)>0){
             foreach($permisos as $permiso){
@@ -502,16 +455,8 @@ class PdfController extends Controller
                 $nombre_h=$hour->name;
                 $tipo_s = TipoSalida:: find($permiso->tiposalida_id);
                 $nombre_ts = $tipo_s->nombre_tiposalida;
-                // $permisosturno = EventoAsistecia::where('id_persona', '=', $id_persona)->where('start', '>=', $fecha1)->where('end', '<=', $fecha2)->where('inicio_time', '<=', $hour->start_input)
-                // ->where('fin_evento', '>=', $hour->end_time)->get();
-
-                // if (Count($permisosturno)>0) {
-                //     dd($permisosturno);
-                // }
                 $difhora = Carbon::create($permiso->inicio_time)->diffInHours(Carbon::create($permiso->fin_evento));
-
                 if ($difhora == 4 ) {
-
                     $perMT ++;
                 }
                 elseif ($difhora > 7){
@@ -522,12 +467,10 @@ class PdfController extends Controller
                 }
             }
         }
-
         for ($i=0; $i <= $dif; $i++) {
             $aux = Carbon::create($fecha1)->addDay($i)->format('Y-m-d');
             $cadena [] = Carbon::create($fecha1)->addDay($i)->format('Y-m-d');
         }
-
         $pdf = PDF::loadView('rrhh::scarrhh.reportes.pdfs.pdfPersonalpermisos',
             compact(['permisos', 'mes', 'año', 'nombres', 'ci', 'cargo', 'grupo', 'fecha1', 'fecha2', 'perMT', 'perTC', 'perH','cadena', 'nombre_tc', 'hours']))
             ->setPaper('letter');
@@ -537,7 +480,6 @@ class PdfController extends Controller
 
     public function pdfps(Request $request)
     {
-        // ->setPaper('letter');$date = new Carbon('next monday');
         $date = new DATE('last monday');
 
         $fecha1 = $request->fecha1;

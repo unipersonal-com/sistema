@@ -4,6 +4,7 @@ namespace Modules\Rrhh\Http\Controllers;
 
 use Modules\Rrhh\Entities\Asistencia;
 use Modules\Rrhh\Entities\Horario;
+use Modules\Rrhh\Entities\Personal;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -32,6 +33,9 @@ class AsistenciasController extends Controller
       return Asistencia::all();
       //php artisan migrate:refresh --path=Modules/Rrhh/Database/Migrations/2022_05_11_124453_create_rcivapersonals_table.php
       //php artisan migrate:refresh --path=Modules/Rrhh/Database/Migrations/2022_04_24_025815_create_asistencias_table.php
+      //php artisan migrate:refresh --path=Modules/Rrhh/Database/Migrations/2022_06_28_152328_create_evento_table.php
+      //2022_06_28_152328_create_evento_asistecias_table.php Modules\Rrhh\Database\Migrations\2022_06_28_152328_create_evento_table.php
+
       //Modules/Rrhh/Database/Migrations/2020_09_01_115225_create_horarios_table.php
       //php artisan make:controller ControllerCalendar --path=Modules/Rrhh/
     }
@@ -46,6 +50,14 @@ class AsistenciasController extends Controller
     {
         //
         $hour = Horario::find($request->id_horario);
+        $id_persona= $request->id_persona;
+        if ($id_persona == null) {
+          $persona = Personal::where('ci', '=', $request->ci_a)->first();
+          $id_persona = $persona->id;
+          // code...
+        }
+
+        $persona = Personal::find($id_persona);
        // $hour->fill($request->all());
        //dd($hour);
        $hourComparar= Carbon:: create($hour->start_input);
@@ -91,7 +103,7 @@ class AsistenciasController extends Controller
             }elseif($hora>=$hour->start_output&&$hora<=$hour->end_output){
                 $tipo_a = "salida";
                 $message="agregado asistenciA salida  $hour->name";
-                $estado_a="salida $hour->name";
+                $estado_a="salida";
               }
               else {
                 return response()->json($message="horas de registro $hour->name ya cerradas");
@@ -107,18 +119,25 @@ class AsistenciasController extends Controller
          }
 
         //dd($request->all());
-        $new=new Asistencia();
-        $new->id_horario=$request->id_horario;
-        $new->id_persona=$request->id_persona;
-        $new->ci_a=$request->ci_a;
-        $new->turno_a=$turno_a;
-        $new->tipo_a=$tipo_a;
-        $new->estado_a=$estado_a;
-        $new->fecha=$fecha;
-        $new->hora=$hora;
-        //dd($new);
-        $new->save();
-        return response()->json([$new,$message, $turno_a]);
+        if ($persona != null && $persona->baja == 1) {
+
+          $new=new Asistencia();
+          $new->id_horario=$request->id_horario;
+          $new->id_persona=$id_persona;
+          $new->ci_a=$request->ci_a;
+          $new->turno_a=$turno_a;
+          $new->tipo_a=$tipo_a;
+          $new->estado_a=$estado_a;
+          $new->fecha=$fecha;
+          $new->hora=$hora;
+          //dd($new);
+          $new->save();
+          return response()->json([$new,$message, $turno_a]);
+        }
+        else{
+          return response()->json($message="el usuario no existe o esta dado de baja, COMUNICARSE CON EL ADMINISTRADOR");
+        }
+
     }
 
     /**
@@ -126,7 +145,15 @@ class AsistenciasController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * 
      */
+    ////////api de prueba para sacar al personal de trabajo/////
+    public function personalget()
+    {
+        //
+        return Personal::all();
+    }
+
     public function show($id)
     {
         //

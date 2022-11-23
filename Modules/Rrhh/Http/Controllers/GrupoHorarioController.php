@@ -36,7 +36,6 @@ class GrupoHorarioController extends Controller
 
     public function creategrupo( Request $request)
     {
-
         $horario_id =$request->horario_id;
         $grupo_persona_id=$request->grupo_id;
         $start = $request->start;
@@ -44,32 +43,21 @@ class GrupoHorarioController extends Controller
         $grupo = "no designado";
         $uno = "1";
         $end= Carbon::createFromFormat('Y-m-d',$ends)->addDay()->toDateString();
-       // @include('Componentes.simpleInput',['name'=>'fecha_fin','label'=>'Fecha fin','type'=>'date','value'=>\Carbon::createFromFormat('Y-m-d',$condicionComercial->fecha_fin )->addDay()->toDateTimeString()]);
-        //dd($grupo_persona_id[1]);
-
         $horario= Horario::find($horario_id);
-        //dd($horario->id);
         $nombre_h=$horario->name;
         $diaTrabajo = $horario->work_day;
         $color=$horario->color;
-        //dd($horario,  $diaTrabajo );
-
         foreach($grupo_persona_id as $grup){
-
             $grupo= GrupoTrabajo::find($grup);
             $grupopersonas = GrupoPersona::where('grupo_trabajo_id', '=', $grup)->get();
             $fecha = Carbon::now()->format('Y-m-d H:i:s');
             if ($diaTrabajo <= 1) {
-                 
                 foreach ($grupopersonas as $person) {
                     //$grupo = "no designado";
                     $dia= GrupoHorario::all();
-                    //dd($person);
-    
                     if ($dia==null) {
                         $person->horarios()->attach($horario->id,['grupo_id'=>$grupo->id, 'persona_id'=>$person->personal_id, 'title'=>$nombre_h.' '.$grupo->nombre_trabajo, 'ci'=>$person->ci, 'nombre_h'=>$nombre_h, 'grupo'=>$grupo->nombre_trabajo, 'work_day' => $diaTrabajo, 'start' => $start, 'end' => $end, 'color'=>$color ]);
                         $person->save();
-                        //return response()->json(["resp"=>200]);
                     }
                     else{
                         $diaver= GrupoHorario::where('grupo_persona_id', '=', $person->id)->get();
@@ -79,8 +67,7 @@ class GrupoHorarioController extends Controller
                                 $cont= $cont + ($ver->work_day);
                             }
                         }
-                        $contasis=$cont + ($diaTrabajo); 
-                        //dd($contasis);
+                        $contasis=$cont + ($diaTrabajo);
                         if ($diaTrabajo <= 1 && $contasis <=1 ) {
                             $existe= GrupoHorario::where('grupo_persona_id', '=', $person->id)->where('horario_id', '=', $horario->id)->where('start', '<=', $start)->where('end', '>=', $end)->first();
                             if ($existe==null) {
@@ -90,27 +77,20 @@ class GrupoHorarioController extends Controller
                             else{
                                 return response()->json(["resp"=>250]);
                             }
-    
                         }
                         else {
-                            return response()->json(["resp"=>250]); 
-                            
+                            return response()->json(["resp"=>250]);
                         }
-    
                     }
                 }
             }
             else{
                 if ($diaTrabajo == 2) {
                     foreach ($grupopersonas as $person) {
-                        //$grupo = "no designado";
                         $dia= GrupoHorario::all();
-                        //dd($person);
-        
                         if ($dia==null) {
                             $person->horarios()->attach($horario->id,['grupo_id'=>$grupo->id, 'persona_id'=>$person->personal_id, 'title'=>$nombre_h.' '.$grupo->nombre_trabajo, 'ci'=>$person->ci, 'nombre_h'=>$nombre_h, 'grupo'=>$grupo->nombre_trabajo, 'work_day' => $diaTrabajo, 'start' => $start, 'end' => $end, 'color'=>$color ]);
                             $person->save();
-                            //return response()->json(["resp"=>200]);
                         }
                         else{
                             $existe= GrupoHorario::where('grupo_persona_id', '=', $person->id)->where('horario_id', '=', $horario->id)->where('start', '<=', $start)->where('end', '>=', $end)->first();
@@ -121,66 +101,33 @@ class GrupoHorarioController extends Controller
                             else{
                                 return response()->json(["resp"=>250]);
                             }
-                            // $diaver= GrupoHorario::where('grupo_persona_id', '=', $person->id)->get();
-                            // $cont=0;
-                            // foreach($diaver as $ver) {
-                            //     if ($start >= $ver->start && $end <= $ver->end){
-                            //         $cont= $cont + ($ver->work_day);
-                            //     }
-                            // }
-                            // $contasis=$cont + ($diaTrabajo); 
-                            // //dd($contasis);
-                            // if ($diaTrabajo == 2) {
-                            //     $existe= GrupoHorario::where('grupo_persona_id', '=', $person->id)->where('horario_id', '=', $horario->id)->where('start', '<=', $start)->where('end', '>=', $end)->first();
-                            //     if ($existe==null) {
-                            //         $person->horarios()->attach($horario->id,['grupo_id'=>$grupo->id, 'persona_id'=>$person->personal_id, 'title'=>$nombre_h.' '.$grupo->nombre_trabajo, 'ci'=>$person->ci, 'nombre_h'=>$nombre_h, 'grupo'=>$grupo->nombre_trabajo, 'work_day' => $diaTrabajo, 'start' => $start, 'end' => $end, 'color'=>$color ]);
-                            //         $person->save();
-                            //     }
-                            //     else{
-                            //         return response()->json(["resp"=>250]);
-                            //     }
-        
-                            // }
-                            // else {
-                            //     return response()->json(["resp"=>250]); 
-                                
-                            // }
-        
                         }
                     }
                 }
-            }    
+            }
         }
-        return response()->json(["resp"=>200]);      
+        return response()->json(["resp"=>200]);
     }
 
     public function createDesignacionpersonal( Request $request)
     {
         $horario_id =$request->horario_id;
         $start = $request->start;
-        $end = $request->end; 
+        $end = $request->end;
         $personal_id = $request->personal_id;
         $grupo = "no designado";
-        //dd($horario_id, $start, $end, $personal_id);
         $horario= Horario::find($horario_id);
         $grupopersona = GrupoPersona::Where('personal_id', '=', $personal_id)->first();
         if ($grupopersona == null) {
             return response()->json(["resp"=>20000]);
         }
-        
         $person = GrupoPersona::find($grupopersona->id);
-        //dd($person, $grupopersona);
         $nombre_h=$horario->name;
         $diaTrabajo = $horario->work_day;
         $color=$horario->color;
-
         $personal= GrupoPersona::all();
         $fecha = Carbon::now()->format('Y-m-d H:i:s');
-
-        
         $userdes= GrupoHorario::where('grupo_persona_id', '=', $person->id)->first();
-
-        //dd($sumtrabajo);
         if ($userdes == null) {
             $person->horarios()->attach($horario->id,['grupo_id'=>$person->grupo_trabajo_id, 'persona_id'=>$person->personal_id, 'title'=>$nombre_h.' '.$person->nonbre_grupotrabajo, 'ci'=>$person->ci, 'nombre_h'=>$nombre_h, 'grupo'=>$person->nonbre_grupotrabajo, 'work_day' => $diaTrabajo, 'start' => $start, 'end' => $end, 'color'=>$color ]);
             $person->save();
@@ -190,17 +137,14 @@ class GrupoHorarioController extends Controller
             $trabajodehorario = $userdes->work_day;
             $sumtrabajo= $trabajodehorario + $diaTrabajo;
             $diavers= GrupoHorario::where('grupo_persona_id', '=', $person->id)->get();
-            //dd($diavers);
             foreach($diavers as $ver) {
-
                 if ($start >= $ver->start && $end <= $ver->end && $sumtrabajo > 1) {
                     return response()->json(["resp"=>2000]);
-                    dd('desde fechas');
                 }
                 else {
                     if ($diaTrabajo <= 1) {
                         $dia = GrupoHorario::all();
-                    
+
                         if ($dia==null) {
                             $person->horarios()->attach($horario->id,['grupo_id'=>$person->grupo_trabajo_id, 'persona_id'=>$person->personal_id, 'title'=>$nombre_h.' '.$person->nonbre_grupotrabajo, 'ci'=>$person->ci, 'nombre_h'=>$nombre_h, 'grupo'=>$person->nonbre_grupotrabajo, 'work_day' => $diaTrabajo, 'start' => $start, 'end' => $end, 'color'=>$color ]);
                             $person->save();
@@ -211,7 +155,7 @@ class GrupoHorarioController extends Controller
                             $cont=0;
                             foreach($diaver as $vers) {
                                 if ($start >= $vers->start && $end <= $vers->end){
-                                    $cont= $cont + ($vers->work_day);  
+                                    $cont= $cont + ($vers->work_day);
                                 }
                             }
                             $contasis=$cont + ($diaTrabajo);
@@ -220,7 +164,7 @@ class GrupoHorarioController extends Controller
                                 $existe= GrupoHorario::where('grupo_persona_id', '=', $person->id)->where('horario_id', '=', $horario->id)->where('start', '<=', $start)->where('end', '>=', $end)->first();
                                 if ($existe==null) {
                                     //dd($contasis);
-                                    $person->horarios()->attach($horario->id,['grupo_id'=>$person->grupo_trabajo_id, 'persona_id'=>$person->personal_id, 'title'=>$nombre_h.' '.$person->nonbre_grupotrabajo, 
+                                    $person->horarios()->attach($horario->id,['grupo_id'=>$person->grupo_trabajo_id, 'persona_id'=>$person->personal_id, 'title'=>$nombre_h.' '.$person->nonbre_grupotrabajo,
                                     'ci'=>$person->ci, 'nombre_h'=>$nombre_h, 'grupo'=>$person->nonbre_grupotrabajo, 'work_day' => $diaTrabajo, 'start' => $start, 'end' => $end, 'color'=>$color ]);
                                     $person->save();
                                 }
@@ -229,19 +173,19 @@ class GrupoHorarioController extends Controller
                                 }
                             }
                             else {
-                                return response()->json(["resp"=>250]); 
+                                return response()->json(["resp"=>250]);
                             }
-                        
-                        }  
+
+                        }
                         return response()->json(["resp"=>200]);
-                    }   
+                    }
                 }
             }
-        }      
+        }
     }
 
     public function designacionesPersonal( request $request) {
-        
+
         $hoursi=Horario::all();
         $id_persona = $request->idPer;
         $actuals=AssiteciaActual::where('id_persona', '=', $id_persona)->get();
@@ -274,11 +218,11 @@ class GrupoHorarioController extends Controller
             "unidad" => $designacion->grupo,
             "work_day" => $designacion->work_day,
             "start" => $designacion->start,
-            "end" => $designacion->end, 
+            "end" => $designacion->end,
             "color" => $designacion->color,
             "created_at" => Carbon::create($designacion->created_at)->format('Y-m-d H:i:s'),
         ];
-    
+
         //return $json;                         "nombre" => $designacion->nombre,
         return response()->json($json);
         //return response()->json(view('rrhh::scarrhh.vistasHojaCalculo.meses', compact('title', 'fecha', 'meses', 'hoursi','id_persona'))->render());
@@ -337,17 +281,17 @@ class GrupoHorarioController extends Controller
         $designacion = GrupoHorario::find($id_edit);
         $designacion->start = $start;
         $designacion->end = $end;
-        
+
         $designacion->save();
 
         return response()->json(["resp"=>200]);
-        //return response()->json(["resp"=>250]); 
+        //return response()->json(["resp"=>250]);
     }
 
 
     public function updategeneral(Request $request)
     {
-        
+
         $start = $request->start;
         $end = $request->end;
         $start1 = $request->start1;
@@ -369,13 +313,13 @@ class GrupoHorarioController extends Controller
             if (Count($userdesignado)>0) {
                 $si = $si + 1;
                 foreach($userdesignado as $designacion) {
-    
+
                     $designacion->start = $start1;
                     $designacion->end = $end1;
-                    
+
                     $designacion->save();
-                    
-        
+
+
                 }
             }
             else {
@@ -391,9 +335,9 @@ class GrupoHorarioController extends Controller
         }
         else if ($no == $cont) {
             return response()->json([
-                "resp"=>2000, "grupos"=>$cont, "realizados"=>$si, 
+                "resp"=>2000, "grupos"=>$cont, "realizados"=>$si,
                 "view"=>view("rrhh::scarrhh.grupohorario.modals.modal-fechas1 ")->render(),
-            ]); 
+            ]);
         }
         else {
             return response()->json([
@@ -406,7 +350,7 @@ class GrupoHorarioController extends Controller
 
     public function updategeneralverifi(Request $request)
     {
-        
+
         $start = $request->start;
         $ends = $request->end;
         $horario_id = $request->horario_id;
@@ -424,8 +368,8 @@ class GrupoHorarioController extends Controller
             $userdesignado = GrupoHorario::Where('grupo_id', '=', $grupo)->where('horario_id', '=', $horario_id)->where('start','<=',$start)->where('end','>=',$end)->get();
             //dd(Count($userdesignado));
             if (Count($userdesignado)>0) {
-                $si = $si + 1;                    
-        
+                $si = $si + 1;
+
             }
             else {
                 $no ++;
@@ -439,7 +383,7 @@ class GrupoHorarioController extends Controller
             ]);
         }
         else if ($no == $cont) {
-            return response()->json(["resp"=>2000, "grupos"=>$cont, "realizados"=>$si]); 
+            return response()->json(["resp"=>2000, "grupos"=>$cont, "realizados"=>$si]);
         }
         else {
             return response()->json([
@@ -450,7 +394,7 @@ class GrupoHorarioController extends Controller
 
     }
     /**
-     * Update the specified resource in storage. 
+     * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -463,12 +407,12 @@ class GrupoHorarioController extends Controller
             "personal_id" => "required",
             "horario_id" => "required",
             "title" => "required",
-            "ci" =>"required", 
+            "ci" =>"required",
             "nombre_h" => "required",
             "grupo" =>"required",
             "work_day" =>"required",
             "start" => "required",
-            "end" =>"required", 
+            "end" =>"required",
             "color" => "required",
         ]);
 
@@ -501,7 +445,7 @@ class GrupoHorarioController extends Controller
 
     public function deletetegeneral(Request $request)
     {
-        
+
         $start = $request->start;
         $ends = $request->end;
         $horario_id = $request->horario_id;
@@ -532,10 +476,10 @@ class GrupoHorarioController extends Controller
             return response()->json(["resp"=>200, "grupos"=>$cont, "realizados"=>$si]);
         }
         else if ($no == $cont) {
-            return response()->json(["resp"=>2000, "grupos"=>$cont, "realizados"=>$si]); 
+            return response()->json(["resp"=>2000, "grupos"=>$cont, "realizados"=>$si]);
         }
         else {
-            return response()->json(["resp"=>250, "grupos"=>$cont, "realizados"=>$si]);  
+            return response()->json(["resp"=>250, "grupos"=>$cont, "realizados"=>$si]);
         }
 
     }

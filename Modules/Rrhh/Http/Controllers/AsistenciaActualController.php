@@ -41,23 +41,14 @@ class AsistenciaActualController extends Controller
         $s2=Horario::find(6);
 
         $horas= Carbon::now()->format( 'H:i:s');
-        
-        //$Asistencias=Asistencia::whereDate('fecha', '2022-06-02')->get();  //por fecha
-        //$Asistencias=Asistencia::whereDay('fecha', '3')->get();  /////// muetsra todos los dias ddel dia escogido 
-        //$Asistencias=Asistencia::whereMonth('fecha', '<=', now()->month )->get();  /////now()->month-> actual
-        // $Asistencias=Asistencia::whereBetween('fecha', [now()->subMonth(3), today()])->get();
-        // $po=$Asistencias[0];
-        // $po1=$Asistencias[3];
-        
         if($s2->work_day==1){
-            dd($po,$s2->work_day);  
+            dd($po,$s2->work_day);
         }
 
         $data1=Asistencia::paginate(8);
         $data = AsistenciaBiometrico::paginate(10);
         $id_persona = $request->idPer;
-        //dd($hours);   
-        $title="ASISTENCIAS DE: ";  
+        $title="ASISTENCIAS DE: ";
         if ($request->ajax()) {
             return [
                 'list_personal' => view('rrhh::scarrhh.AsistenciasActuales.paginaciones.pagination_dataapp')->with(compact('data1', 'data'))->render(),
@@ -68,8 +59,6 @@ class AsistenciaActualController extends Controller
             return view('rrhh::scarrhh.AsistenciasActuales.index', compact('title', 'data1', 'id_persona', 'data'));
         }
         return view('rrhh::scarrhh.AsistenciasActuales.index', compact('title', 'data1', 'id_persona', 'data'));
-        //return view('rrhh::scarrhh.schedule.index',compact('actuales','title'));
-        //dd('hola');
     }
     function indexrender(Request $request)
     {
@@ -97,7 +86,7 @@ class AsistenciaActualController extends Controller
         if (Count($actuals)>0) {
 
             foreach ($actuals as $actual){
-    
+
                 if ($actual->estado_a == "en hora" || $actual->estado_a == "atrasado" || $actual->estado_a == "salida" || $actual->estado_a == 'abandono' || $actual->estado_a == 'permiso'){
                     $valor = $valor + $actual->valor_asistencia;
                 }
@@ -114,8 +103,8 @@ class AsistenciaActualController extends Controller
                     if ($actual->estado_a == "falta"){
                         $faltas = $faltas + $actual->valor_asistencia;
                     }
-                } 
-    
+                }
+
             }
             return response()->json([
                 "resp"=>200,
@@ -130,20 +119,12 @@ class AsistenciaActualController extends Controller
     }
 
     public function asistenciasporPersona( request $request) {
-        
         $hoursi=Horario::all();
         $id_persona = $request->idPer;
         $persona = Personal::find($id_persona);
         $fecha = Carbon::now()->format('Y-m');
-        // $f=Carbon::createFromDate($fecha)->month;
-        // dd($f);
         $actuals = [];
-        
         $actualss=AssiteciaActual::where('id_persona', '=', $id_persona)->orderBy('start', 'asc')->orderBy('hora', 'asc')->paginate(15);
-
-
-        //dd($fecha, $actuals, now()->month(10)->month, now()->month);
-        //$actuals= AssiteciaActual::all();
         $valor = 0;
         $faltas = 0;
         $atrasos = 0;
@@ -151,14 +132,11 @@ class AsistenciaActualController extends Controller
         $permisos = 0;
 
         foreach ($actualss as $actual){
-            // if (Carbon::createFromDate($actual->start)->month == now()->month(10)->month) {
                 if (Carbon::createFromDate($actual->start)->month == now()->month) {
                 $actuals[]=$actual;
-
                 if ($actual->estado_a == "en hora" || $actual->estado_a == "atrasado" || $actual->estado_a == "salida" || $actual->estado_a == 'abandono' || $actual->estado_a == 'permiso'){
                     $valor = $valor + $actual->valor_asistencia;
                 }
-                
                 if ($actual->estado_a == "atrasado"){
                     $atrasos = $atrasos + 1;
                 }
@@ -172,25 +150,19 @@ class AsistenciaActualController extends Controller
                     if ($actual->estado_a == "falta"){
                         $faltas = $faltas + $actual->valor_asistencia;
                     }
-                } 
+                }
             }
-
         }
-        //dd($actuals);
         $fecha= Carbon::now()->format('Y-m-d');
         $title="ASISTENCIAS DE: ";
-
-        return response()->json(view('rrhh::scarrhh.AsistenciasActuales.vistaAsistencias ', 
+        return response()->json(view('rrhh::scarrhh.AsistenciasActuales.vistaAsistencias ',
             compact('title', 'fecha', 'hoursi', 'id_persona', 'actualss', 'valor', 'faltas', 'atrasos', 'abandonos', 'permisos', 'persona'))->render());
-
     }
     function paginarasistenciaspersonales(Request $request)
     {
         $actualss=AssiteciaActual::where('id_persona', '=', $request->id_persona)->orderBy('start')->orderBy('hora', 'asc')->paginate(15);
-
         if($request->ajax())
         {
-            //dd($asistencias);
             if (Count($actualss)>0) {
                 return response()->json( [
                     'asistencias_personal'=> view('rrhh::scarrhh.AsistenciasActuales.vistaAsistenciasrender ', compact('actualss'))->render(),
@@ -201,7 +173,6 @@ class AsistenciaActualController extends Controller
             else {
                return response()->json(['resp' => 250]);
             }
-
         }
     }
 
@@ -212,53 +183,31 @@ class AsistenciaActualController extends Controller
      */
     public function importarasistenciasaplicacion()
     {
-        
         $asitenciasaplicacion = Asistencia::all();
-        //  dd($asitenciasaplicacion);
-        //dd($asitenciasaplicacion);
         $color='#57d4cc';
         $nombre = "App Movil";
         $descripcion = "Contraseña";
 
         foreach ($asitenciasaplicacion as $aplicacion){
             $idPerso = Personal::where('id','=', $aplicacion->id_persona)->first();
-            //dd($idPerso);whereBetween('fecha',[$this->fi,$this->ff])
-            //$idapp= HorarioPersona::where('personal_id','=',$aplicacion->id_persona)->where('horario_id', '=', $aplicacion->id_horario)->first();
             $idapp= GrupoHorario::where('persona_id','=',$aplicacion->id_persona)->where('horario_id', '=', $aplicacion->id_horario)->whereDate('start', '<=', $aplicacion->fecha)->whereDate('end', '>=', $aplicacion->fecha)->first();
-
-            //dd($idPerso->ci, $aplicacion->ci_a, $aplicacion->id_persona, $aplicacion->id_horario);
-
             if ($idapp != null && $idPerso->ci == $aplicacion->ci_a) {
-            //dd($idapp, $aplicacion->fecha);
                 $hour= Horario::find($aplicacion->id_horario);
-                // // $salida = AsistenciaBiometrico::where('id_user_b', '=', $aplicacion->ci_a)->whereDate('timestamp', '=', $aplicacion->fecha)->whereTime('timestamp', '>=', $hour->start_output)
-                // // ->whereTime('timestamp', '<=', $hour->end_output)->get();
-                // // //$permisossalida = EventoAsistecia::where('id_persona', '=', $persona->persona_id)->where('start', '=', $fech)->where('inicio_time', '>', $hour->end_input)->where('fin_evento', '>', $hour->end_time)->get();
-                // // $permisossalida = EventoAsistecia::where('id_persona', '=', $persona->persona_id)->where('start', '=', $fech)
-                // // ->where('inicio_time', '>', $hour->end_input)->where('fin_evento', '>=', $hour->end_time)->where('fin_evento', '<=', $hour->end_output)->orderBy('start')->get();
                 $permisosturno = EventoAsistecia::where('id_persona', '=', $aplicacion->id_persona)->where('start', '=', $aplicacion->fecha)->where('inicio_time', '<=', $hour->start_input)->where('fin_evento', '>=', $hour->end_time)->first();
-
                 $permisosentrada = EventoAsistecia::where('id_persona', '=', $aplicacion->id_persona)->where('start', '=', $aplicacion->fecha)->where('inicio_time', '>=', $hour->start_time)->where('inicio_time', '<=', $hour->start_input)->where('fin_evento', '<', $hour->end_time)->first();
-
-
                 $exisentradafal = AssiteciaActual::where('ci_a', '=', $aplicacion->ci_a)->where('id_horario','=', $hour->id)->where('turno_a','=', $aplicacion->turno_a)->where('tipo_a','=', 'entrada')
                 ->where('hora','<=', $hour->end_input)->where('estado_a','=', 'falta')->where('start','=', $aplicacion->fecha)->first();
-
                 $exisentrada = AssiteciaActual::where('ci_a', '=', $aplicacion->ci_a)->where('id_horario','=', $hour->id)->where('turno_a','=', $aplicacion->turno_a)->where('tipo_a','=', 'entrada')
                 ->where('hora','<=', $hour->end_input)->where('estado_a','!=', 'falta')->where('start','=', $aplicacion->fecha)->first();
-
                 $entradaAs = Asistencia::where('ci_a', '=', $aplicacion->ci_a)->where('fecha', '=', $aplicacion->fecha)->where('id_horario', '=', $hour->id)->where('tipo_a', '=', 'entrada')->first();
-
-
                 $entrada = AsistenciaBiometrico::where('id_user_b', '=', $aplicacion->ci_a)->whereDate('timestamp', '=', $aplicacion->fecha)->whereTime('timestamp', '>=', $hour->start_time)->whereTime('timestamp', '<=', $hour->end_input)->first();
-                //dd($idapp, $aplicacion->fecha, $entrada);
+
                 if ($permisosturno == null) {
                     if ($aplicacion->tipo_a == "salida") {
                         if ($exisentrada != null || $entrada != null || $permisosentrada != null || $entradaAs != null) {
 
                             if ($aplicacion->estado_a == "en hora") {
                                 $color='#51dbaa';
-                    
                             }
                             elseif ($aplicacion->estado_a == "atrasado") {
                              $color='#ced149';
@@ -267,13 +216,11 @@ class AsistenciaActualController extends Controller
                              //dd('sera color rojo');
                              $color ='#3c28b8';
                             }
-        
                             $asis = AssiteciaActual::where('ci_a', '=', $aplicacion->ci_a)->where('turno_a','=', $aplicacion->turno_a)
                             ->where('tipo_a','=', $aplicacion->tipo_a)->where('start','=', $aplicacion->fecha)->first();
-                            
                             if ($asis == null){
                              $actual = new AssiteciaActual();
-                
+
                              $actual->title = $aplicacion->turno_a.' '.$aplicacion->tipo_a;
                              $actual->nombre = $nombre;
                              $actual->ci_a = $aplicacion->ci_a;
@@ -288,7 +235,7 @@ class AsistenciaActualController extends Controller
                              $actual->estado_a = $aplicacion->estado_a;
                              $actual->valor_asistencia = ($idapp->work_day)/2;
                              $actual->color = $color;
-                
+
                              $actual->save();
                             }
                         }
@@ -314,7 +261,7 @@ class AsistenciaActualController extends Controller
                                 $actual->estado_a = $estado_a;
                                 $actual->valor_asistencia = ($idapp->work_day)/2;
                                 $actual->color = $color;
-                
+
                                 $actual->save();
                             }
                         }
@@ -322,23 +269,18 @@ class AsistenciaActualController extends Controller
                     else {
                         if ($aplicacion->estado_a == "en hora") {
                             $color='#51dbaa';
-                            //dd($color);
-                
                         }
                         elseif ($aplicacion->estado_a == "atrasado") {
                          $color='#ced149';
                         }
                         elseif ($aplicacion->estado_a == "salida") {
-                         //dd('sera color rojo');
                          $color ='#3c28b8';
                         }
-                
                         $asis = AssiteciaActual::where('ci_a', '=', $aplicacion->ci_a)->where('turno_a','=', $aplicacion->turno_a)
                         ->where('tipo_a','=', $aplicacion->tipo_a)->where('start','=', $aplicacion->fecha)->first();
-                        
                         if ($asis == null){
                          $actual = new AssiteciaActual();
-            
+
                          $actual->title = $aplicacion->turno_a.' '.$aplicacion->tipo_a;
                          $actual->nombre = $nombre;
                          $actual->ci_a = $aplicacion->ci_a;
@@ -353,48 +295,36 @@ class AsistenciaActualController extends Controller
                          $actual->estado_a = $aplicacion->estado_a;
                          $actual->valor_asistencia = ($idapp->work_day)/2;
                          $actual->color = $color;
-            
+
                          $actual->save();
                         }
                     }
                 }
             }
             else{
-
             }
-
         }
         return response()->json(["resp"=>200]);
     }
 
-    public function importarasistenciasbiometrico() 
+    public function importarasistenciasbiometrico()
     {
-
         $actual = AssiteciaActual::Where('nombre', '=', "biometrico")-> get();
         $actualbio=$actual->get(count($actual)-1);
-        //dd($actualbio->ci_a, Count($actual));
         $horas= Carbon::now();
         $m = $horas->month;
-        //dd($m);
         $semana = $horas->week;
         $date = "2021-5-14";
         $day  = new Carbon($date);
         $dayOfWeek = $day->format('w');
-       // dd($dayOfWeek);
-
         $AsistenciasBiometricos=AsistenciaBiometrico::all();
-        //dd($AsistenciasBiometricos);
         $color='#cb0000';
-        
         $nombre="biometrico";
         $turno_a='defecto';
         $tipo_a='defecto';
         $estado_a='defecto';
         $horario_id = 0;
         $fechaactual= Carbon::now()->format('Y-m-d');
-        //dd($fechaactual);
-        // $idPerso = Personal::where('ci','=', $biometrico->id_user_b)->first();
-        // $perhora = GrupoHorario::where('persona_id', '=', $idPerso->id)->get();
         $perhorario = DB::table('rrhh.personas')
             ->join('rrhh.grupo_horario', 'rrhh.grupo_horario.persona_id', '=', 'rrhh.personas.id')
             // ->where('rrhh.horario_persona.personal_id', '=', 1)
@@ -409,23 +339,14 @@ class AsistenciaActualController extends Controller
             $dif = Carbon::create($persona->start)->diffInDays(Carbon::create($persona->end));
             //dd(Count($asip), $persona);
             //dd($dif);
-            for ($i=0; $i < $dif; $i++) { 
+            for ($i=0; $i < $dif; $i++) {
                 $aux = Carbon::create($persona->start)->addDay($i)->format('Y-m-d');
-                $cadena [] = Carbon::create($persona->start)->addDay($i)->format('Y-m-d');  
+                $cadena [] = Carbon::create($persona->start)->addDay($i)->format('Y-m-d');
             }
 
             $asisap = Asistencia::where('ci_a', '=', $persona->ci)->whereDate('fecha', '>=', $persona->start)->whereDate('fecha', '<=', $persona->end)->get();
             $asisbi= AsistenciaBiometrico::where('id_user_b', '=', $persona->ci)->whereDate('timestamp', '>=', $persona->start)->whereDate('timestamp', '<=', $persona->end)->get();
             foreach ($cadena as $fech)  {
-                // $cadena1 = array();
-                // $dif = Carbon::create($persona->start)->diffInDays(Carbon::create($persona->end));
-                // //dd(Count($asip), $persona);
-                // //dd($dif);
-                // for ($i=0; $i < $dif; $i++) { 
-                //     $aux = Carbon::create($persona->start)->addDay($i)->format('Y-m-d');
-                //     $cadena1 [] = Carbon::create($persona->start)->addDay($i)->format('Y-m-d');
-                // }
-                // dd($cadena, $persona->start, $persona->end, $cadena1, $persona->start, $persona->end);
                 $hour= Horario::find($persona->horario_id);
                 $horario_id=$hour->id;
                 $turno_a=$hour->name;
@@ -438,51 +359,27 @@ class AsistenciaActualController extends Controller
                     $turno_a=$hour->name;
                     $valor_asistencia= ($hour->work_day)/2;
                     $idp=$persona->persona_id;
-                    //dd($hour);
-
-
                     $permisosturno = EventoAsistecia::where('id_persona', '=', $persona->persona_id)->where('start', '=', $fech)->where('inicio_time', '<=', $hour->start_input)->where('fin_evento', '>=', $hour->end_time)->get();
                     $permisosentrada = EventoAsistecia::where('id_persona', '=', $persona->persona_id)->where('start', '=', $fech)->where('inicio_time', '>=', $hour->start_time)->where('inicio_time', '<=', $hour->start_input)->where('fin_evento', '<', $hour->end_time)->get();
-
-
                     if (Count($permisosturno)>0 && $fech < $fechaactual) {
                         foreach ($permisosturno as $key => $turno) {
                             $fecha = Carbon::create($turno->start)->format('Y-m-d');
                             $hora = Carbon::create($turno->inicio_time)->format('H:i:s');
                             $hora1 = Carbon::create($turno->fin_evento)->format('H:i:s');
-
-
-                             //dd($fecha, $hora, $hora1);  
-                             
-                             //$hour= Horario::find($persona->horario_id);
                              $salida = TipoSalida::find($turno->tiposalida_id);
                              $horario_id=$hour->id;
                              $hourComparar= Carbon:: create($hour->start_input);
                              $compAtraso=$hourComparar->addMinutes($hour->late_minutes)->format('H:i:s');
-                             //$valor_asistencia= ($hour->work_day)/2;
                              $tipo_a = "entrada";
-                             //$turno_a=$hour->name;
-
                              if ($hora>=$hour->start_time && $hora <= $hour->end_input) {
                                 $tipo_a = "entrada";
                                 $estado_a="permiso";
                                 $color = $turno->color;
-                                
-                                // if ($hora>=$hour->start_time && $hora <= $compAtraso) {
-                                //     $estado_a="en hora";
-                                //     $color='#51dbaa';
-                                
-                                // }
-                                // if ($hora > $compAtraso && $hora<=$hour->end_input) {
-                            
-                                //     $estado_a="atrasado";
-                                //     $color='#ced149';
-                                // }
                                 $asis = AssiteciaActual::where('id_persona', '=', $turno->id_persona)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fecha)->first();
-             
+
                                 if ($asis == null && $turno_a !='defecto') {
                                     $actual = new AssiteciaActual();
-                    
+
                                     $actual->title = $turno_a.' '.$tipo_a;
                                     $actual->nombre = $turno->title;
                                     $actual->ci_a = $persona->ci;
@@ -497,24 +394,23 @@ class AsistenciaActualController extends Controller
                                     $actual->estado_a = $estado_a;
                                     $actual->valor_asistencia = $valor_asistencia;
                                     $actual->color = $color;
-                    
+
                                     $actual->save();
                                 }
-    
                             }
                             if ($hora1>=$hour->end_time && $hora1 <= $hour->end_output) {
                                     $valor_asistencia= ($hour->work_day)/2;
                                     $tipo_a = "salida";
                                     $estado_a="permiso";
                                     $color = $turno->color;
-        
+
                                     $salida = TipoSalida::find($turno->tiposalida_id);
 
                                     $asis = AssiteciaActual::where('id_persona', '=', $turno->id_persona)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fecha)->first();
-                    
+
                                     if ($asis == null && $turno_a !='defecto') {
                                         $actual = new AssiteciaActual();
-                        
+
                                         $actual->title = $turno_a.' '.$tipo_a;
                                         $actual->nombre = $turno->title;
                                         $actual->ci_a = $persona->ci;
@@ -529,58 +425,40 @@ class AsistenciaActualController extends Controller
                                         $actual->estado_a = $estado_a;
                                         $actual->valor_asistencia = $valor_asistencia;
                                         $actual->color = $color;
-                        
+
                                         $actual->save();
                                     }
                             }
-                            
                         }
                     }
-                    //dd($persona, $permisosentrada, $permisossalida, $permisosturno, $persona->start, $persona->end, $persona->ci, $persona->persona_id);    ///// eventos
-                    
                     $entrada = AsistenciaBiometrico::where('id_user_b', '=', $persona->ci)->whereDate('timestamp', '=', $fech)->whereTime('timestamp', '>=', $hour->start_time)->whereTime('timestamp', '<=', $hour->end_input)->get();
                     if (Count($entrada)>0 && $fech < $fechaactual) {
                         foreach ($entrada as $biometrico){
                             $fecha = Carbon::create($biometrico->timestamp)->format('Y-m-d');
                             $hora = Carbon::create($biometrico->timestamp)->format('H:i:s');
-                             //dd($fecha, $hora, $biometrico);  
-                             
-                             //$hour= Horario::find($persona->horario_id);
-         
+
                              $horario_id=$hour->id;
                              $hourComparar= Carbon:: create($hour->start_input);
                              $compAtraso=$hourComparar->addMinutes($hour->late_minutes)->format('H:i:s');
-                             //$valor_asistencia= ($hour->work_day)/2;
                              $tipo_a = "entrada";
-                             //$turno_a=$hour->name;
 
                              if ($hora>=$hour->start_time && $hora <= $hour->end_time) {
                                 $tipo_a = "entrada";
-                                
+
                                 if ($hora>=$hour->start_time && $hora <= $compAtraso) {
                                     $estado_a="en hora";
                                     $color='#51dbaa';
-                                
                                 }
                                 if ($hora > $compAtraso && $hora<=$hour->end_input) {
-                            
                                     $estado_a="atrasado";
                                     $color='#ced149';
                                 }
-                                // if ($hora > $hour->end_input)
-                                // {
-                                //     $estado_a="falta";
-                                //     $color='#cb0000';
-                                //     $valor_asistencia= 0;
-                                // }
-                                //dd($tipo_a, $hora, $estado_a, $hour->end_input, $compAtraso);
-                
                             }
                             $asis = AssiteciaActual::where('ci_a', '=', $biometrico->id_user_b)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fecha)->first();
-             
+
                             if ($asis == null && $turno_a !='defecto') {
                                 $actual = new AssiteciaActual();
-                
+
                                 $actual->title = $turno_a.' '.$tipo_a;
                                 $actual->nombre = $nombre;
                                 $actual->ci_a = $biometrico->id_user_b;
@@ -595,29 +473,18 @@ class AsistenciaActualController extends Controller
                                 $actual->estado_a = $estado_a;
                                 $actual->valor_asistencia = $valor_asistencia;
                                 $actual->color = $color;
-                
+
                                 $actual->save();
                             }
-
                         }
-                        //dd($turno_a, $estado_a);
                     }
-
                     elseif (Count($entrada)==0 && Count($permisosentrada)>0 && $fech < $fechaactual) {
                         foreach ($permisosentrada as $perentrada){
                             //dd($biometrico);
                             $fecha = Carbon::create($perentrada->start)->format('Y-m-d');
                             $hora = Carbon::create($hour->start_input)->format('H:i:s');
-                             //dd($fecha, $hora, $biometrico);  
-                             
-                             //$hour= Horario::find($persona->horario_id);
+
                              $salidas = TipoSalida::find($perentrada->tiposalida_id);
-         
-                            //  $horario_id=$hour->id;
-                            //  $hourComparar= Carbon:: create($hour->start_input);
-                            //  $compAtraso=$hourComparar->addMinutes($hour->late_minutes)->format('H:i:s');
-                             //$valor_asistencia= ($hour->work_day)/2;
-                             //$turno_a=$hour->name;
 
                              if ($hora>=$hour->start_time && $hora <= $hour->end_time && $persona->horario_id == $perentrada->id_horario) {
                                 $tipo_a = "entrada";
@@ -625,10 +492,10 @@ class AsistenciaActualController extends Controller
                                 $color = $perentrada->color;
                             }
                             $asis = AssiteciaActual::where('id_persona', '=', $perentrada->id_persona)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fecha)->first();
-             
+
                             if ($asis == null && $turno_a !='defecto' && $persona->horario_id == $perentrada->id_horario) {
                                 $actual = new AssiteciaActual();
-                
+
                                 $actual->title = $turno_a.' '.$tipo_a;
                                 $actual->nombre = $perentrada->title;
                                 $actual->ci_a = $persona->ci;
@@ -643,7 +510,7 @@ class AsistenciaActualController extends Controller
                                 $actual->estado_a = $estado_a;
                                 $actual->valor_asistencia = $valor_asistencia;
                                 $actual->color = $color;
-                
+
                                 $actual->save();
                             }
                             else{
@@ -670,10 +537,10 @@ class AsistenciaActualController extends Controller
                                     $actual->estado_a = $estado_a;
                                     $actual->valor_asistencia = $valor_asistencia;
                                     $actual->color = $color;
-                    
+
                                     $actual->save();
                                 }
-        
+
                             }
                         }
                         //dd($turno_a, $estado_a);
@@ -702,7 +569,7 @@ class AsistenciaActualController extends Controller
                             $actual->estado_a = $estado_a;
                             $actual->valor_asistencia = $valor_asistencia;
                             $actual->color = $color;
-            
+
                             $actual->save();
                         }
 
@@ -723,7 +590,7 @@ class AsistenciaActualController extends Controller
                         ///////aqui estamos comparando si hay o no asistencia de salida de turno///
                         if (Count($salida) > 0 || Count($permisossalida) > 0 || Count($permisosturno) > 0 && $fech < $fechaactual ) {
                             //dd("hay para reistrar");
-                        
+
                             // else {
                             //     dd("abandono",$fech, $hour->id, $persona);
                             // }
@@ -731,10 +598,10 @@ class AsistenciaActualController extends Controller
                                 foreach($salida as $biometrico){
                                     $fecha = Carbon::create($biometrico->timestamp)->format('Y-m-d');
                                     $hora = Carbon::create($biometrico->timestamp)->format('H:i:s');
-                                    //dd($fecha, $hora, $biometrico);  
-                                    
+                                    //dd($fecha, $hora, $biometrico);
+
                                     //$hour= Horario::find($persona->horario_id);
-                
+
                                     $valor_asistencia= ($hour->work_day)/2;
                                     $tipo_a = "salida";
                                     $estado_a="salida";
@@ -742,10 +609,10 @@ class AsistenciaActualController extends Controller
 
                                     if ($hora>=$hour->start_output && $hora <= $hour->end_output) {
                                         $asis = AssiteciaActual::where('ci_a', '=', $biometrico->id_user_b)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fecha)->first();
-                            
+
                                         if ($asis == null && $turno_a !='defecto') {
                                             $actual = new AssiteciaActual();
-                            
+
                                             $actual->title = $turno_a.' '.$tipo_a;
                                             $actual->nombre = $nombre;
                                             $actual->ci_a = $biometrico->id_user_b;
@@ -760,7 +627,7 @@ class AsistenciaActualController extends Controller
                                             $actual->estado_a = $estado_a;
                                             $actual->valor_asistencia = $valor_asistencia;
                                             $actual->color = $color;
-                            
+
                                             $actual->save();
                                         }
                                     }
@@ -772,7 +639,7 @@ class AsistenciaActualController extends Controller
                                     //dd($sa, $hour);
                                     $fecha = Carbon::create($sa->start)->format('Y-m-d');
                                     $hora2 =$hour->start_output;
-                
+
                                     $valor_asistencia= ($hour->work_day)/2;
                                     $tipo_a = "salida";
                                     $estado_a="permiso";
@@ -782,10 +649,10 @@ class AsistenciaActualController extends Controller
                                     //dd($persona);
                                     if ($hora2>=$hour->start_output && $hora2 <= $hour->end_output && $persona->horario_id == $sa->id_horario) {
                                         $asis = AssiteciaActual::where('id_persona', '=', $sa->id_persona)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fech)->first();
-                                    
+
                                         if ($asis == null && $turno_a !='defecto') {
                                             $actual = new AssiteciaActual();
-                                        
+
                                             //dd($sa);
                                             $actual->title = $turno_a.' '.$tipo_a;
                                             $actual->nombre = $sa->title;
@@ -801,16 +668,16 @@ class AsistenciaActualController extends Controller
                                             $actual->estado_a = $estado_a;
                                             $actual->valor_asistencia = $valor_asistencia;
                                             $actual->color = $color;
-                            
+
                                             $actual->save();
                                         }
-                                        
+
                                     }
                                 }
                                 //dd($turno_a, $estado_a);
                             }
                             else {
-                                
+
                                 $tipo_a = "salida";
                                 $estado_a = "falta";
                                 $hora = "00:00:00";
@@ -832,7 +699,7 @@ class AsistenciaActualController extends Controller
                                     $actual->estado_a = $estado_a;
                                     $actual->valor_asistencia = $valor_asistencia;
                                     $actual->color = $color;
-                    
+
                                     $actual->save();
                                 }
 
@@ -860,14 +727,14 @@ class AsistenciaActualController extends Controller
                                 $actual->estado_a = $estado_a;
                                 $actual->valor_asistencia = $valor_asistencia;
                                 $actual->color = $color;
-                
+
                                 $actual->save();
                             }
                         }
                     }
                     //// aqui es cuando la entrada el falta
                     else {
-                            
+
                         $tipo_a = "salida";
                         $estado_a = "falta";
                         $hora = "00:00:00";
@@ -889,7 +756,7 @@ class AsistenciaActualController extends Controller
                             $actual->estado_a = $estado_a;
                             $actual->valor_asistencia = $valor_asistencia;
                             $actual->color = $color;
-            
+
                             $actual->save();
                         }
 
@@ -897,13 +764,13 @@ class AsistenciaActualController extends Controller
                 }
                 else {
                     //dd($persona, $fech);
-                    
+
                     $permisosturno = EventoAsistecia::where('id_persona', '=', $persona->persona_id)->where('start', '=', $fech)->where('inicio_time', '<=', $hour->start_input)->where('fin_evento', '>=', $hour->end_time)->get();
                     $permisosentrada = EventoAsistecia::where('id_persona', '=', $persona->persona_id)->where('start', '=', $fech)->where('inicio_time', '>=', $hour->start_time)->where('inicio_time', '<=', $hour->start_input)->where('fin_evento', '<', $hour->end_time)->get();
                     $permisossalida = EventoAsistecia::where('id_persona', '=', $persona->persona_id)->where('start', '=', $fech)
                         ->where('inicio_time', '>', $hour->end_input)->where('fin_evento', '>=', $hour->end_time)->where('fin_evento', '<=', $hour->end_output)->orderBy('start')->get();
                     //if (Count($permisosentrada) > 0 || Count($permisossalida) > 0 || Count($permisosturno) > 0 && $fech < $fechaactual ) {
-                    
+
                         if (Count($permisosturno)>0) {
                             foreach ($permisosturno as $key => $turno) {
                                 $fecha = Carbon::create($turno->start)->format('Y-m-d');
@@ -911,8 +778,8 @@ class AsistenciaActualController extends Controller
                                 $hora1 = Carbon::create($turno->fin_evento)->format('H:i:s');
 
 
-                                //dd($fecha, $hora, $hora1);  
-                                
+                                //dd($fecha, $hora, $hora1);
+
                                 //$hour= Horario::find($persona->horario_id);
                                 $salida = TipoSalida::find($turno->tiposalida_id);
                                 $horario_id=$hour->id;
@@ -926,22 +793,22 @@ class AsistenciaActualController extends Controller
                                     $tipo_a = "entrada";
                                     $estado_a="permiso";
                                     $color = $turno->color;
-                                    
+
                                     // if ($hora>=$hour->start_time && $hora <= $compAtraso) {
                                     //     $estado_a="en hora";
                                     //     $color='#51dbaa';
-                                    
+
                                     // }
                                     // if ($hora > $compAtraso && $hora<=$hour->end_input) {
-                                
+
                                     //     $estado_a="atrasado";
                                     //     $color='#ced149';
                                     // }
                                     $asis = AssiteciaActual::where('id_persona', '=', $turno->id_persona)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fecha)->first();
-                    
+
                                     if ($asis == null && $turno_a !='defecto') {
                                         $actual = new AssiteciaActual();
-                        
+
                                         $actual->title = $turno_a.' '.$tipo_a;
                                         $actual->nombre = $turno->title;
                                         $actual->ci_a = $persona->ci;
@@ -956,24 +823,24 @@ class AsistenciaActualController extends Controller
                                         $actual->estado_a = $estado_a;
                                         $actual->valor_asistencia = $valor_asistencia;
                                         $actual->color = $color;
-                        
+
                                         $actual->save();
                                     }
-        
+
                                 }
                                 if ($hora1>=$hour->end_time && $hora1 <= $hour->end_output) {
                                         $valor_asistencia= ($hour->work_day)/2;
                                         $tipo_a = "salida";
                                         $estado_a="permiso";
                                         $color = $turno->color;
-            
+
                                         $salida = TipoSalida::find($turno->tiposalida_id);
 
                                         $asis = AssiteciaActual::where('id_persona', '=', $turno->id_persona)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fecha)->first();
-                        
+
                                         if ($asis == null && $turno_a !='defecto') {
                                             $actual = new AssiteciaActual();
-                            
+
                                             $actual->title = $turno_a.' '.$tipo_a;
                                             $actual->nombre = $turno->title;
                                             $actual->ci_a = $persona->ci;
@@ -988,10 +855,10 @@ class AsistenciaActualController extends Controller
                                             $actual->estado_a = $estado_a;
                                             $actual->valor_asistencia = $valor_asistencia;
                                             $actual->color = $color;
-                            
+
                                             $actual->save();
                                         }
-                                } 
+                                }
                             }
                         }
 
@@ -1000,27 +867,27 @@ class AsistenciaActualController extends Controller
                                 //dd($biometrico);
                                 $fecha = Carbon::create($perentrada->start)->format('Y-m-d');
                                 $hora = Carbon::create($hour->start_input)->format('H:i:s');
-                                 //dd($fecha, $hora, $biometrico);  
-                                 
+                                 //dd($fecha, $hora, $biometrico);
+
                                  //$hour= Horario::find($persona->horario_id);
                                  $salidas = TipoSalida::find($perentrada->tiposalida_id);
-             
+
                                 //  $horario_id=$hour->id;
                                 //  $hourComparar= Carbon:: create($hour->start_input);
                                 //  $compAtraso=$hourComparar->addMinutes($hour->late_minutes)->format('H:i:s');
                                  //$valor_asistencia= ($hour->work_day)/2;
                                  //$turno_a=$hour->name;
-    
+
                                  if ($hora>=$hour->start_time && $hora <= $hour->end_time && $persona->horario_id == $perentrada->id_horario) {
                                     $tipo_a = "entrada";
                                     $estado_a="permiso";
                                     $color = $perentrada->color;
                                 }
                                 $asis = AssiteciaActual::where('id_persona', '=', $perentrada->id_persona)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fecha)->first();
-                 
+
                                 if ($asis == null && $turno_a !='defecto' && $persona->horario_id == $perentrada->id_horario) {
                                     $actual = new AssiteciaActual();
-                    
+
                                     $actual->title = $turno_a.' '.$tipo_a;
                                     $actual->nombre = $perentrada->title;
                                     $actual->ci_a = $persona->ci;
@@ -1035,7 +902,7 @@ class AsistenciaActualController extends Controller
                                     $actual->estado_a = $estado_a;
                                     $actual->valor_asistencia = $valor_asistencia;
                                     $actual->color = $color;
-                    
+
                                     $actual->save();
                                 }
                                 // else{
@@ -1062,10 +929,10 @@ class AsistenciaActualController extends Controller
                                         $actual->estado_a = $estado_a;
                                         $actual->valor_asistencia = $valor_asistencia;
                                         $actual->color = $color;
-                        
+
                                         $actual->save();
                                     }
-            
+
                                 // }
                             }
                             //dd($turno_a, $estado_a);
@@ -1095,7 +962,7 @@ class AsistenciaActualController extends Controller
                                     $actual->estado_a = $estado_a;
                                     $actual->valor_asistencia = $valor_asistencia;
                                     $actual->color = $color;
-                    
+
                                     $actual->save();
                                 }
                             }
@@ -1103,7 +970,7 @@ class AsistenciaActualController extends Controller
                                 //dd($sa, $hour);
                                 $fecha = Carbon::create($sa->start)->format('Y-m-d');
                                 $hora2 =$hour->start_output;
-            
+
                                 $valor_asistencia= ($hour->work_day)/2;
                                 $tipo_a = "salida";
                                 $estado_a="permiso";
@@ -1113,10 +980,10 @@ class AsistenciaActualController extends Controller
                                 //dd($persona);
                                 if ($hora2>=$hour->start_output && $hora2 <= $hour->end_output && $persona->horario_id == $sa->id_horario) {
                                     $asis = AssiteciaActual::where('id_persona', '=', $sa->id_persona)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('start','=', $fech)->first();
-                                
+
                                     if ($asis == null && $turno_a !='defecto') {
                                         $actual = new AssiteciaActual();
-                                    
+
                                         //dd($sa);
                                         $actual->title = $turno_a.' '.$tipo_a;
                                         $actual->nombre = $sa->title;
@@ -1132,15 +999,15 @@ class AsistenciaActualController extends Controller
                                         $actual->estado_a = $estado_a;
                                         $actual->valor_asistencia = $valor_asistencia;
                                         $actual->color = $color;
-                        
+
                                         $actual->save();
                                     }
-                                    
+
                                 }
                             }
                             //dd($turno_a, $estado_a);
                         }
-                    //} 
+                    //}
                         else {
                             $tipo_a = "entrada";
                             $estado_a = "falta";
@@ -1163,7 +1030,7 @@ class AsistenciaActualController extends Controller
                                 $actual->estado_a = $estado_a;
                                 $actual->valor_asistencia = $valor_asistencia;
                                 $actual->color = $color;
-                
+
                                 $actual->save();
                             }
 
@@ -1188,7 +1055,7 @@ class AsistenciaActualController extends Controller
                                 $actual->estado_a = $estado_a;
                                 $actual->valor_asistencia = $valor_asistencia;
                                 $actual->color = $color;
-                
+
                                 $actual->save();
                             }
 
@@ -1232,7 +1099,7 @@ class AsistenciaActualController extends Controller
             "estado_a" => $asis->estado_a,
             "color" => $asis->color,
         ];
-    
+
         return response()->json($json);
         //return response()->json(view('rrhh::scarrhh.vistasHojaCalculo.meses', compact('title', 'fecha', 'meses', 'hoursi','id_persona'))->render());
 

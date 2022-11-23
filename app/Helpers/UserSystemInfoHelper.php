@@ -7,7 +7,8 @@ namespace App\Helpers;
 class UserSystemInfoHelper
 {
   private static function get_user_agent(){
-  		return $_SERVER['HTTP_USER_AGENT'];
+  		//return $_SERVER['HTTP_USER_AGENT'];
+		return isset($_SERVER['HTTP_USER_AGENT']);// aumente isset
   	}
 
   	public static function get_ip(){
@@ -69,7 +70,7 @@ class UserSystemInfoHelper
   		return $os_platform;
   	}
 
-  	public static function get_browsers(){
+  	public static function get_browsers(){  //// era vacio
 
   		$user_agent= self::get_user_agent();
 
@@ -103,19 +104,19 @@ class UserSystemInfoHelper
   		$tablet_browser = 0;
   		$mobile_browser = 0;
 
-  		if(preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', strtolower($_SERVER['HTTP_USER_AGENT']))){
+  		if(preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', isset($_SERVER['HTTP_USER_AGENT']))){  ///// cambiamos strtolower a isset
   			$tablet_browser++;
   		}
 
-  		if(preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', strtolower($_SERVER['HTTP_USER_AGENT']))){
+  		if(preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', isset($_SERVER['HTTP_USER_AGENT']))){
   			$mobile_browser++;
   		}
 
-  		/*if((strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'application/vnd.wap.xhtml+xml')> 0) or
+  		if((strpos(isset($_SERVER['HTTP_ACCEPT']), 'application/vnd.wap.xhtml+xml')> 0) or  /// estba comentado
   			((isset($_SERVER['HTTP_X_WAP_PROFILE']) or
   				isset($_SERVER['HTTP_PROFILE'])))){
   					$mobile_browser++;
-  		}*/
+  		}
 
   			$mobile_ua = strtolower(substr(self::get_user_agent(), 0, 4));
   			$mobile_agents = array(

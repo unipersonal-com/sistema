@@ -69,6 +69,7 @@
 
     <?php echo Html::style('assets/admin/css/stylesModief.css'); ?>
 
+    <link rel="stylesheet" href="<?php echo e(asset('assets/fullcalendar/lib/main.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/bootstrapselect/css/bootstrap-select.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/bootstrapselect/css/bootstrap-select.min.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('migrate-4.3/select2/dist/css/select2.css')); ?>">
@@ -114,12 +115,15 @@
 
       <?php echo Html::script('assets/js/custom.js'); ?>
 
+      <script src="<?php echo e(asset('assets/fullcalendar/lib/main.js')); ?>"></script>
+      <script src="<?php echo e(asset('assets/fullcalendar/lib/locales-all.js')); ?>"></script>
       <script src="<?php echo e(asset('assets/toastr/toastr.min.js')); ?>"></script>
       <?php echo Html::script('assets/js/autonumeric/autoNumeric.js'); ?>
 
       <script src="<?php echo e(asset('assets/bootstrapselect/js/bootstrap-select.js')); ?>"></script>
       <script src="<?php echo e(asset('assets/bootstrapselect/js/bootstrap-select.min.js')); ?>"></script>
       <script src="<?php echo e(asset('migrate-4.3/select2/dist/js/select2.min.js')); ?>"></script>
+  
       <script>
         var URL_BASE='<?php echo e(url("/rrhh")); ?>';
         var _TOKEN='<?php echo e(csrf_token()); ?>';

@@ -9,6 +9,7 @@
             </div>
             <div class="modal-body" style="background: #CBDEED">
                 <h4>Nuevo</h4>
+              
                 <?php echo Form::open(['route'=>'admin.save.horario', 'role' => 'form', 'method' => 'post']); ?>
 
                 <table class="table table-responsive">

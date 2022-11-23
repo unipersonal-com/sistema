@@ -48,12 +48,10 @@ class DesignacionGrupoController extends Controller
     public function store(Request $request)
     {
         $id_grupotrabajo = $request->id_grupotrabajo;
-        
+
         $ci = $request->ci;
         $grupotrabajo = GrupoTrabajo::find($id_grupotrabajo);
         $persona = Personal::where('ci', '=', $ci)->first();
-        
-
         if ($persona != null) {
             $person = Personal:: find($persona->id);
             $existeDesignacion= GrupoPersona::where('personal_id', '=', $person->id)->first();
@@ -64,10 +62,8 @@ class DesignacionGrupoController extends Controller
                 return response()->json(["resp"=>200, "person"=>$designaciongrupo]);
             }
             else {
-                return response()->json(["resp"=>250]); 
+                return response()->json(["resp"=>250]);
             }
-
-
         }
         else {
             return response()->json(["resp"=>2000]);
@@ -77,13 +73,9 @@ class DesignacionGrupoController extends Controller
     public function designargrupodesdeindexpersonal(Request $request)
     {
         $id_grupotrabajo = $request->id_g;
-        
         $id_p = $request->id_p;
-        //dd($id_grupotrabajo, $id_p);
         $grupotrabajo = GrupoTrabajo::find($id_grupotrabajo);
         $persona = Personal::where('id', '=', $id_p)->first();
-        
-
         if ($persona != null) {
             $person = Personal:: find($persona->id);
             $existeDesignacion= GrupoPersona::where('personal_id', '=', $person->id)->first();
@@ -94,10 +86,8 @@ class DesignacionGrupoController extends Controller
                 return response()->json(["resp"=>200, "person"=>$designaciongrupo]);
             }
             else {
-                return response()->json(["resp"=>250]); 
+                return response()->json(["resp"=>250]);
             }
-
-
         }
         else {
             return response()->json(["resp"=>2000]);
@@ -106,10 +96,7 @@ class DesignacionGrupoController extends Controller
 
     public function store1(Request $request)
     {
-
-
             $designaciongrupo=new GrupoPersona($request->all());
-
             $bool= Validator::make($request->all(),[
                 "id_persona" => "required",
                 "id_grupotrabajo" => "required",
@@ -138,13 +125,13 @@ class DesignacionGrupoController extends Controller
 
         $grupoD->grupo_trabajo_id = $grupo->id;
         $grupoD->nonbre_grupotrabajo = $nombre_g;
-        
+
         $grupoD->save();
 
         return response()->json(["resp"=>200, "person"=>$grupoD]);
 
     }
-    
+
     public function getDeGrupo(Request $request){
         $id=$request->id;
 
