@@ -6,7 +6,7 @@
     <ul class="nav navbar-nav navbar-right">
       <li class="JxContentOptUser">
         <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-          {{\Auth::user()->name}}
+          {{\Auth::user()->name}} 
           <span class="fa fa-angle-down"></span>
         </a>
         <ul class="dropdown-menu dropdown-usermenu pull-right">

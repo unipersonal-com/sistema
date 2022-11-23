@@ -106,7 +106,7 @@
         </div>
       </div>
     </div>
-<?php echo Html::script('assets/js/bootstrap/dist/js/bootstrap.min.js'); ?>
+      <?php echo Html::script('assets/js/bootstrap/dist/js/bootstrap.min.js'); ?>
 
       <?php echo Html::script('assets/js/nprogress/nprogress.js'); ?>
 

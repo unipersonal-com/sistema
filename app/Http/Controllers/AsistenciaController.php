@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Asistencia;
+use App\Horario;
+
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 class AsistenciaController extends Controller
@@ -18,9 +20,13 @@ class AsistenciaController extends Controller
         $ciii = "13229219";
         $tipo_aa = "en hora";
         $asistenciass = Asistencia::where('ci_a', '=', $ciii)->get();
+        $horario = Horario::where('id', '=', '1')->where('name', '=', 'turno mañana')->get();
         //dd($asistenciass, $asistenciass->where('tipo_a','=', "salida"));
        // dd(Asistencia::all());
-        return Asistencia::all();
+        //return Horario::all();
+        //return $horario;
+       
+      return Asistencia::all();
 
     }
 
@@ -30,144 +36,73 @@ class AsistenciaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Asistencia $asistencia)
+    public function store(Request $request, Asistencia $asistencia, Horario $horario)
     {
         //
+        $hour = Horario::find($request->id_horario);
+       // $hour->fill($request->all());
+       //dd($hour);
+       $hourComparar= Carbon:: create($hour->start_input);
+       $compAtraso=$hourComparar->addMinutes($hour->late_minutes)->format('H:i:s');
+       //dd($compAtraso);
+        //dd($hour->start_time);
         $fecha = Carbon::now()->format('Y-m-d');
-        $hora = Carbon::now()->format('H:i');
-        $hora_c = Carbon::now()->hour;
-        $minuto = Carbon::now()->minute;
+        $hora = Carbon::now()->format('H:i:s');
+        //$hora_c = Carbon::now()->hour;
+        //$minuto = Carbon::now()->minute;
+
+        //dd($hora);
 
         $error_schedule = false;
         $message = "errorr";
         $tipo_a = "prueba";
-        $estado_a = "prueba";
+        $estado_a = "falta";
         $turno_a="mañana";
         
-        if ($hora_c >=7 && $hora_c<=20) {
+        if ($hora >=$hour->start_time&& $hora<=$hour->end_output) {
           $error_schedule=true;
         }
         else{
-          //return null;
-          return response()->json($message="horas de registro no activos");
+          return response()->json($message="horas de registro no activos del: $hour->name");
         }
         if ($error_schedule == true) {
-          if ($hora_c>=7 && $hora_c<=13) {
-            //$error_schedule = true;
-            $turno_a="mañana";
-            $message="agregado asistenciA entrada en la mañana";
+          if ($hora >=$hour->start_time&& $hora<=$hour->end_output) {
+            $turno_a=$hour->name;
+            $message="agregado  $hour->name";
 
-            if ($hora_c>=7&&$hora_c<=9){
+            if ($hora>=$hour->start_time&&$hora<=$hour->end_time){
               $tipo_a = "entrada";
-              if ($hora_c>=7&&$minuto>=1&&$hora_c<=8&&$minuto<=15) {
+              if ($hora>=$hour->start_time&&$hora<=$compAtraso) {
                 $estado_a="en hora";
-                $message="hh";
               }
-              if($hora_c>=8&&$minuto>15 && $hora_c<=8&&$minuto<=30){
+              if($hora>$compAtraso&& $hora<=$hour->end_input){
                 $estado_a="atrasado";
-                $message = "ss";
               }
-              if($hora_c>=8&&$minuto>30 && $hora_c<9) {
-                $estado_a="falta";
-              }                  
+              if($hora>$hour->end_input) {
+                return response()->json($message ="horas de registro entradas $hour->name ya cerradas");
+              }
 
-            }elseif($hora_c>=12&&$hora_c<=13){
+            }elseif($hora>=$hour->start_output&&$hora<=$hour->end_output){
                 $tipo_a = "salida";
-                $message="agregado asistenciA salida en la mañana";
-                $estado_a="salida turno mañana";
-
-                /*
-                if ($hora_c>=12&&$hora_c<=12&&$minuto<=15) {
-                  $estado_a="en hora";
-                  $message="hh";
-                }
-                if($hora_c>=12&&$minuto>15 && $hora_c<=3&&$minuto<=30){
-                  $estado_a="salida despues de hora";
-                  $message = "ss";
-                }
-                if($hora_c>=12&&$minuto>20 && $hora_c<13) {
-                  $estado_a="salida tardia";
-                  $message = "sff";
-                }
-                else{
-                  return $message="registro de asistencia de salidas por la mañana ya cerradas";
-                }*/
+                $message="agregado asistenciA salida  $hour->name";
+                $estado_a="salida $hour->name";
               }
               else {
-                return response()->json($message="horas de registro por la mañana ya cerradas");
+                return response()->json($message="horas de registro $hour->name ya cerradas");
               }
-          }elseif($hora_c>=14&&$hora_c<=19){
-            //$error_schedule = true;
-            $turno_a="tarde";
-            $message="agregado asistenciA entrada en la tarde";
-
-            if ($hora_c>=14&&$hora_c<=16){
-              $tipo_a = "entrada";
-              if ($hora_c>=14&&$hora_c<=14&&$minuto<=45) {
-                $estado_a="en hora";
-                $message="hh";
-              }
-              if($hora_c>=14&&$minuto>45 && $hora_c<=15&&$minuto<=1){
-                $estado_a="atrasado";
-                $message = "ss";
-              }
-              if($hora_c>=15&&$minuto>1 && $hora_c<=16) {
-                $estado_a="falta";
-              }
-              else{
-                return response()->json($message="registro de asistencia de entrada por la tarde ya cerradas");
-              }
-
-            }elseif($hora_c>=18&&$minuto>=30&&$hora_c<=20){
-                $tipo_a = "salida";
-                $message="agregado asistencia salida en la tarde";
-                $estado_a="salida";
-                /*
-                if ($hora_c>=18&&$minuto>=30&&$hora_c<=19&&$minuto<=1) {
-                  $estado_a="en hora";
-                  $message="hh";
-                }
-                if($hora_c>=19&&$minuto>1 && $hora_c<=3&&$minuto<=30){
-                  $estado_a="despues de hora";
-                  $message = "ss";
-                }
-                if($hora_c>=19&&$minuto>30 && $hora_c<20) {
-                  $estado_a="salida muy tarde";
-                  $message = "sff";
-                }*/
-
-              }
-              /*else {
-                return response()->json($message="horas de registro por la tarde cerradas");
-              }*/
           }
         }
-        else{
-          
-          return response()->json($message="horas no establecidas para registro");
-        }
 
-        $asistenciass = Asistencia::where('ci_a', '=', $request->ci_a)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->first();
-        // $asistenciasss = $asistenciass::where('tipo_a', '=', $tipo_a)->first();
-         //$cis = select('ci_a', 'FROM', Asistencia::where('ci_a', '=', $request->ci_a));
- 
-         //dd($asistenciass->Where('tipo_a', '=', $tipo_a));
-       //  dd($asistenciass);
+        $asistenciass = Asistencia::where('ci_a', '=', $request->ci_a)->where('turno_a','=', $turno_a)->where('tipo_a','=', $tipo_a)->where('fecha','=', $fecha)->first();
+        
          if ($asistenciass!=null) {
-          /* $asistenciasss = $asistenciass::where('tipo_a', '=', "entrada")->get();
-           if ($asistenciasss != null) {
-             return $message="el ci $request->ci_a  ya esta registrado en la $tipo_a"; 
-             dd($asistenciass, $asistenciasss);
-           }*/
            return response()->json($message="el ci $request->ci_a  ya esta registrado en la $tipo_a y en el turno de: $turno_a.");
            //dd($asistenciass);
          }
-       /*  else {
-           $message="registrado";
-         }*/
 
         //dd($request->all());
         $new=new Asistencia();
+        $new->id_horario=$request->id_horario;
         $new->id_persona=$request->id_persona;
         $new->ci_a=$request->ci_a;
         $new->turno_a=$turno_a;

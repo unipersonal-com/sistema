@@ -26,7 +26,7 @@
         @endpermission
         @permission('administracion.personalrrhh')
         <li class="InTolinkSub">
-          <a href="{{route('rrhh.personals')}}" class="J_JxNavLinkStyXs"><i class="fa fa-mobile"></i> Biometricos</a>
+          <a href="{{route('admin.horarios.lista')}}" class="J_JxNavLinkStyXs"><i class="fa fa-book"></i> Horarios</a>
         </li>
         @endpermission
       </ul>

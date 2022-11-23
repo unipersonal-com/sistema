@@ -202,6 +202,7 @@
                     <td width="10%" style="border-left:1px solid white;">C.I.</td>
                     <td width="10%" style="border-left:1px solid white;">Unidad asiganda</td>
                     <td width="13%" style="border-left:1px solid white;">Email</td>
+                    <td width="7%" style="border-left:1px solid white;">Opciones</td>
                   </tr>
                 </thead>
                 <tbody  id="containerData">
@@ -221,6 +222,13 @@
                       <td width="11%">No asiganado</td>
                       <?php endif; ?>
                       <td width="15%"><?php echo e($empl->correo_electronico); ?></td>
+                      <td width="10%">
+                        <center>
+                        <a class='btn btn-success' href='meses'>Mes</a>
+                        <!-- <a href="<?php echo e(url("rrhh/meses")); ?>" title="Meses"><i class="fa fa-edit"></i></a> -->
+                        <a class='btn btn-info' href='meses'>Biometrico</a>
+                        </center>
+                      </td>
                     </tr>
                   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   <tr style="display:inline;">
@@ -238,6 +246,8 @@
         </div>
       </div>
     </div>
+</div>
+    
   </div>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('after-script'); ?>

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAsistenciasTable extends Migration
+class CreateTipoContratoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,10 @@ class CreateAsistenciasTable extends Migration
      */
     public function up()
     {
-        Schema::create('asistencias', function (Blueprint $table) {
+        Schema::create('rrhh.tipo_contrato', function (Blueprint $table) {
             $table->id();
-            $table->biginteger('id_persona');
-            $table->string('ci_a');
-            $table->string('turno_a');
-            $table->string('tipo_a');
-            $table->string('estado_a');
-            $table->date('fecha');
-            $table->time('hora');
+            $table->string('nombre_tipo_contrato', 100);
+            $table->string('tipo', 2);
             $table->timestamps();
         });
     }
@@ -33,6 +28,6 @@ class CreateAsistenciasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('asistencias');
+        Schema::dropIfExists('rrhh.tipo_contrato');
     }
 }

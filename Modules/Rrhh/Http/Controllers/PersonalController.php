@@ -26,13 +26,26 @@ class PersonalController extends Controller
    * Display a listing of the resource.
    * @return Renderable
    */
-  public function index()
+  public function index(Request $request)
   {
-    $title = 'contenido del personal';
-    $personal = Personal::orderby('id', 'ASC')->get();
+  //   $title = 'contenido del personal';
+  //   $personalss = Personal::orderby('id', 'ASC')->get();
+  //   $depart = ["la paz" => "LP", "oruro" => "OR", "chuquisaca" => "CH", "cochabamba" => "CB", "tarija" => "TR", "santa cruz" => "SC", "beni" => "BN", "Pando" => "PD", "Potosi" => "PT"];
+  //  // return view('rrhh::administrador.personal.index', compact('title', 'personal', 'depart'));
+  //   return view('rrhh::administrator.personal.index2',compact('title', 'personalss', 'depart'));
+
+    $title='administracion de personal';
+    $personals = Personal::orderby('id', 'DESC')->paginate(10);
     $depart = ["la paz" => "LP", "oruro" => "OR", "chuquisaca" => "CH", "cochabamba" => "CB", "tarija" => "TR", "santa cruz" => "SC", "beni" => "BN", "Pando" => "PD", "Potosi" => "PT"];
-   // return view('rrhh::administrador.personal.index', compact('title', 'personal', 'depart'));
-    return view('rrhh::administrator.personal.index',compact('title','personals', 'depart'));
+
+    if($request->ajax()){
+      return [
+        'list_personal' => view('rrhh::administrator.personal.kardex.RendTabPerAll')->with(compact('personals'))->render(),
+        'next_page' => $personals->nextPageUrl()
+      ];
+    }else{
+      return view('rrhh::administrator.personal.index2',compact('title','personals', 'depart'));
+    }
   }
 
   /**
@@ -49,6 +62,59 @@ class PersonalController extends Controller
    * @param Request $request
    * @return Renderable
    */
+
+  public function store1(Request $request)
+  {
+    $messages = [
+      'nombres.required' => 'el campo es obligado',
+      'apellidoP.required' => 'el campo es obligado',
+      'apellidoM.required' => 'el campo es obligado',
+      'ci.required' => 'el campo es obligado',
+      'extension.required' => 'el campo es obligado',
+    ];
+    $request->validate([
+      'nombres' => 'required',
+      'apellidoP' => 'required',
+      'apellidoM' => 'required',
+      'ci' => 'required',
+      'extension' => 'required',
+    ], $messages);
+
+    $personal = new Personal();
+    $personal->nombres = $request->nombres;
+    $personal->apellido_paterno = $request->apellidoP;
+    $personal->apellido_materno = $request->apellidoM;
+    $personal->ci = $request->ci;
+    $personal->extension = $request->extension;
+    $personal->save();
+    //$personal = Personal::all();
+    //$personal = new Personal($request->all());
+
+      // $bool= Validator::make($request->all(),[
+      //     "start_time" => "required",
+      //     "end_time" => "required",
+      //     "late_minutes" => "required|numeric|min:0|max:60",
+      //     "early_minutes" => "required|numeric|min:0|max:420",
+      //     "start_input" => "required",
+      //     "end_input" => "required",
+      //     "start_output" => "required",
+      //     "end_output" => "required",
+      //     "work_day" => "required|numeric|min:0.1|max:30",
+      //     "name" => "required",
+      //     "color" => "required",
+      // ]);
+      // if($request->fails()){
+      //     return redirect()->back()->withErrors($request->errors());
+      // }
+    
+      $notify=[
+          "type"=>"success",
+          "message"=>'El Horario '.$personal->nombres.' a sido registrado correctamente'
+      ];
+      return redirect()->back()->with("notify",$notify);
+  }
+
+
   public function store(Request $request)
   {
     $messages = [

@@ -23,12 +23,34 @@
       Route::get('/personal', 'PersonalController@index')->name('rrhh.personal');
       Route::get('/getpersonal/{id}', 'PersonalController@getpersonal')->name('rrhh.getpersonal');
       Route::post('/personalsav', 'PersonalController@store')->name('rrhh.personalstore');
+//
+      Route::post('/personalg', 'PersonalController@store1')->name('rrhh.personalstore1');
+//
       Route::post('/uppersonal/{id}', 'PersonalController@update')->name('rrhh.personalupdate');
       //biometric
       Route::get('bioconect','BioController@index');
       Route::get('pdftoimge','BioController@pdf')->name('rrhh.pdf');
       Route::post('pdforimg','BioController@pdftoimage')->name('rrhh.pdfimag');
+
+      //horario
+      Route::get('schedule','HorariosController@index')->name('admin.horarios.lista');
+      Route::post('store','HorariosController@store')->name('admin.save.horario');
+      Route::put('updatedata','HorariosController@update')->name('admin.update.horario');
+      Route::get('getSchedule', 'HorariosController@getSchedule');
+      Route::get('deleteShedules', 'HorariosController@deleteShedule');
+      // fin horarios
+
+      // inicio de hojas de calculo
+      Route::get('meses', 'HorariosController@meses')->name('calculo.meses');
+      
+      //Route::get('hora', 'HorariosController@getHorario');
+
+                //end hoarios
+                // rutas calendario
+      Route::get('Calendar/event/{mes}','ControllerCalendar@index_month');
+      Route::get('Calendar/event','ControllerCalendar@index');
     });
+
   });
 
 

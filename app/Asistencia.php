@@ -10,6 +10,7 @@ class Asistencia extends Model
     protected $table = 'asistencias';
 
     protected $fillable = [
+        'id_horario',
         'id_persona',
         'ci_a',
         'turno_a',

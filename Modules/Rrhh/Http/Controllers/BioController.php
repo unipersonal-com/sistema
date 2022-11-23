@@ -18,19 +18,27 @@ class BioController extends Controller
      */
     public function index()
     {
-        $zk = new ZKTeco('10.10.165.242',4370);
+        $zk = new ZKTeco('192.168.100.178',4370);
+
+        if($zk-> connect()!= null){
+            $zk->connect();
+            //dd($zk);
+            $zk1 = new ZKLib('10.10.165.242',4370);
+            $ret = $zk1->connect();
+            $capacity = $zk1->getFreeSize();
+    
+            $version=$zk1->getVersion();
+            $sistem=$zk1->getOs();
+            $plataform=$zk1->getPlatform();
+            $user = $zk1->getUser();
+
+        }
+        else{
+            return view('rrhh::administrator.biometric.index');
+        }
 
         //port 1470
-        $zk->connect();
-        //dd($zk);
-        $zk1 = new ZKLib('10.10.165.242',4370);
-        $ret = $zk1->connect();
-        $capacity = $zk1->getFreeSize();
 
-        $version=$zk1->getVersion();
-        $sistem=$zk1->getOs();
-        $plataform=$zk1->getPlatform();
-        $user = $zk1->getUser();
         //dd(compact('capacity','version','sistem','plataform','user'));
 
     }

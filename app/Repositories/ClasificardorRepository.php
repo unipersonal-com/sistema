@@ -4,7 +4,7 @@ namespace App\Repositories;
 use App\Clasificador;
 
 use KissParadigm\LaravelHashid\Facades\Hashid;
-class ClasificadorRepository
+class ClasificadorLoginController
 {
     protected $model;
 

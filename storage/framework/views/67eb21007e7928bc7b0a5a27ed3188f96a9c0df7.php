@@ -26,7 +26,7 @@
         <?php endif; ?>
         <?php if (Auth::check() && Auth::user()->hasPermission('administracion.personalrrhh')): ?>
         <li class="InTolinkSub">
-          <a href="<?php echo e(route('rrhh.personals')); ?>" class="J_JxNavLinkStyXs"><i class="fa fa-mobile"></i> Biometricos</a>
+          <a href="<?php echo e(route('admin.horarios.lista')); ?>" class="J_JxNavLinkStyXs"><i class="fa fa-book"></i> Horarios</a>
         </li>
         <?php endif; ?>
       </ul>

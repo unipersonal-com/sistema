@@ -3,15 +3,15 @@
 use Illuminate\Support\Facades\Route;
 
 
+Route::get('inicio', 'WelcomeController@index')->name('admin.inicio');
+Route::post('login', 'LoginController@login');
+Route::get('logout', 'LoginController@logout');
 Route::group(['middleware' => 'guest'], function () {
       Route::get('/', 'WelcomeController@index');
       Route::get('login', function () {
         return view('login');
       })->name('login');
     });
-    Route::get('inicio', 'WelcomeController@index')->name('admin.inicio');
-    Route::post('login', 'LoginController@login');
-    Route::get('logout', 'LoginController@logout');
 
 
 

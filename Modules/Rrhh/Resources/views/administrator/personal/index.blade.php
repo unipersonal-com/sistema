@@ -216,6 +216,7 @@
                     <td width="10%" style="border-left:1px solid white;">C.I.</td>
                     <td width="10%" style="border-left:1px solid white;">Unidad asiganda</td>
                     <td width="13%" style="border-left:1px solid white;">Email</td>
+                    <td width="7%" style="border-left:1px solid white;">Opciones</td>
                   </tr>
                 </thead>
                 <tbody  id="containerData">
@@ -234,6 +235,13 @@
                       <td width="11%">No asiganado</td>
                       @endif
                       <td width="15%">{{$empl->correo_electronico}}</td>
+                      <td width="10%">
+                        <center>
+                        <a class='btn btn-success' href='meses'>Mes</a>
+                        <!-- <a href="{{url("rrhh/meses")}}" title="Meses"><i class="fa fa-edit"></i></a> -->
+                        <a class='btn btn-info' href='meses'>Biometrico</a>
+                        </center>
+                      </td>
                     </tr>
                   @endforeach
                   <tr style="display:inline;">
@@ -250,6 +258,8 @@
         </div>
       </div>
     </div>
+</div>
+    
   </div>
 @endsection
 @section('after-script')

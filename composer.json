@@ -12,7 +12,7 @@
         "asdfx/laravel-fullcalendar": "^1.0",
         "barryvdh/laravel-dompdf": "^0.8.7",
         "beyondcode/laravel-websockets": "^1.9",
-        "consoletvs/charts": "^7.2",
+        "consoletvs/charts": "6.*",
         "doctrine/dbal": "^3.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",

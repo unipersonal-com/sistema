@@ -18,6 +18,4 @@ Route::group(['middleware' => 'cors'], function () {
   Route::get('query', 'DictionaryController@query');
 
 });
-Route::resource('asistencias', 'AsistenciaController');
-Route::ApiResource ('asistenciass', 'Asistencia2Controller');
 

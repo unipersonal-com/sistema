@@ -99,7 +99,7 @@
         </div>
       </div>
     </div>
-{!! Html::script('assets/js/bootstrap/dist/js/bootstrap.min.js') !!}
+      {!! Html::script('assets/js/bootstrap/dist/js/bootstrap.min.js') !!}
       {!! Html::script('assets/js/nprogress/nprogress.js') !!}
       {!! Html::script('assets/js/moment/moment.js') !!}
       {!! Html::script('assets/js/custom.js')!!}
